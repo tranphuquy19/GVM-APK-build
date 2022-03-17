@@ -1,6 +1,6 @@
 
 
-FROM    alpine:3.14
+FROM    alpine:3.15
 
 ADD     repositories /etc/apk/repositories
 RUN     apk -U add alpine-sdk sudo nano bash
