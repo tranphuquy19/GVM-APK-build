@@ -2,7 +2,7 @@ name: Docker Build
 
 on:
   push:
-    branches: [master, github-action-apk]
+    branches: [master, github-action-apk, master2]
     # Publish semver tags as releases.
     tags: ["v*.*.*"]
   pull_request:
