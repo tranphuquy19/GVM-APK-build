@@ -1,40 +1,684 @@
+diff -ruN aports2/community/gvmd/added-missing-includes.patch aports/community/gvmd/added-missing-includes.patch
+--- aports2/community/gvmd/added-missing-includes.patch	2022-05-06 23:57:56.627338837 +0700
++++ aports/community/gvmd/added-missing-includes.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,25 +0,0 @@
+-diff --git a/src/gvmd.c b/src/gvmd.c
+-index 419a585..3158bce 100644
+---- a/src/gvmd.c
+-+++ b/src/gvmd.c
+-@@ -91,6 +91,7 @@
+- #include <sys/types.h>
+- #include <sys/wait.h>
+- #include <unistd.h>
+-+#include <glib/gmessages.h>
+- 
+- #include <gvm/base/pidfile.h>
+- #include <gvm/base/pwpolicy.h>
+-diff --git a/src/sql_pg.c b/src/sql_pg.c
+-index 06b2e1d..8803e83 100644
+---- a/src/sql_pg.c
+-+++ b/src/sql_pg.c
+-@@ -33,7 +33,7 @@
+- #include <glib.h>
+- #include <inttypes.h>
+- #include <netinet/in.h>
+--#include <postgresql/libpq-fe.h>
+-+#include <libpq-fe.h>
+- #include <stdlib.h>
+- #include <string.h>
+- 
 diff -ruN aports2/community/gvmd/APKBUILD aports/community/gvmd/APKBUILD
---- aports2/community/gvmd/APKBUILD	2021-07-01 15:26:29.709519182 +0200
-+++ aports/community/gvmd/APKBUILD	2021-07-05 16:45:36.106073865 +0200
-@@ -3,7 +3,7 @@
- # Maintainer: Francesco Colista <fcolista@alpinelinux.org>
- pkgname=gvmd
- pkgver=21.4.2
--pkgrel=10
-+pkgrel=0
- pkgdesc="Greenbone Vulnerability Manager"
- url="https://www.openvas.org/"
- arch="all"
-@@ -30,8 +30,8 @@
- 	malloc-trim.patch"
- 
- case "$CARCH" in
+--- aports2/community/gvmd/APKBUILD	2022-05-06 23:57:56.627338837 +0700
++++ aports/community/gvmd/APKBUILD	1970-01-01 08:00:00.000000000 +0800
+@@ -1,100 +0,0 @@
+-# Contributor: Leonardo Arena <rnalrd@alpinelinux.org>
+-# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+-# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+-pkgname=gvmd
+-pkgver=21.4.4
+-pkgrel=11
+-pkgdesc="Greenbone Vulnerability Manager"
+-url="https://www.openvas.org/"
+-arch="all"
+-license="GPL-2.0-or-later"
+-pkgusers="gvm"
+-pkggroups="gvm"
+-depends="rsync postgresql postgresql-contrib libxslt sed gnutls-utils gvm-libs perl-xml-twig gcompat"
+-makedepends="cmake gvm-libs-dev clang-dev glib-dev
+-	gpgme-dev libgcrypt-dev graphviz libical-dev
+-	postgresql-dev gnutls-dev
+-	doxygen xmltoman perl-sql-translator gcompat"
+-checkdepends="cppcheck"
+-subpackages="$pkgname-dbg $pkgname-doc $pkgname-openrc"
+-source="$pkgname-$pkgver.tar.gz::https://github.com/greenbone/gvmd/archive/v$pkgver.tar.gz
+-	$pkgname.initd
+-	$pkgname.logrotate
+-
+-	greenbone-certdata-sync.conf
+-	greenbone-scapdata-sync.conf
+-	greenbone-nvt-sync.conf
+-
+-	added-missing-includes.patch
+-	malloc-trim.patch
+-	glib_full.patch"
+-
+-case "$CARCH" in
 -# cppcheck is not available
 -s390x | aarch64 | mips | mips64) options="$options !check" ;;
-+	# cppcheck is not available
-+	s390x|aarch64|mips|mips64) options="$options !check"
- esac
- 
- prepare() {
-@@ -52,7 +52,7 @@
- 		-DDEFAULT_CONFIG_DIR=/etc/gvm \
- 		-DLOGROTATE_DIR=/etc/logrotate.d \
- 		-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd.sock \
+-esac
+-
+-prepare() {
+-	default_prepare
+-	mkdir build
+-}
+-
+-build() {
+-	cd "$builddir"/build
+-	# Requires libexecinfo when compiled without -DNDEBUG.
+-	CFLAGS="$CFLAGS -DNDEBUG" \
+-		cmake -DCMAKE_BUILD_TYPE=None \
+-		-DSBINDIR=/usr/bin \
+-		-DCMAKE_INSTALL_PREFIX=/usr \
+-		-DSYSCONF_INSTALL_DIR=/etc \
+-		-DLOCALSTATEDIR=/var \
+-		-DGVM_RUN_DIR=/run/gvmd \
+-		-DDEFAULT_CONFIG_DIR=/etc/gvm \
+-		-DLOGROTATE_DIR=/etc/logrotate.d \
+-		-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd.sock \
 -		..
-+	..
- 	make
- }
- 
-@@ -87,6 +87,7 @@
- EOF
- }
- 
-+
- sha512sums="
- fd752d12187e74f9b43e2fc5fef9fdee0441710a881cc718296cc001b02ef63012ee0492f4a56af4a339d487b0e70060932d37a1ab89abf5fd88f2f3931edcb9  gvmd-21.4.2.tar.gz
- c90247bc8d0797f7d3e3ae0f87fd2bbf58ef67eb7fb60318928b174e366380d1f7cfc23fa9d4c552035d1d1b31577bc097ae9a1e51cfba2c36ed57bba3a52328  gvmd.initd
+-	make
+-}
+-
+-check() {
+-	cd "$builddir"/build
+-	make check
+-}
+-
+-package() {
+-	cd "$builddir"/build
+-	make DESTDIR="$pkgdir" install
+-	install -Dm644 "$srcdir"/$pkgname.logrotate "$pkgdir"/etc/logrotate.d/$pkgname
+-	install -Dm755 "$srcdir"/$pkgname.initd "$pkgdir"/etc/init.d/$pkgname
+-
+-	for f in nvt certdata scapdata; do
+-		install -Dm755 "$srcdir"/greenbone-$f-sync.conf "$pkgdir"/etc/gvm/greenbone-$f-sync.conf
+-	done
+-
+-	install -d -o "$pkgusers" -g "$pkggroups" "$pkgdir"/var/lib/gvm/gvmd/gnupg
+-	chown -R "$pkgusers":"$pkggroups" "$pkgdir"/var/lib/gvm
+-
+-	# remove Debian init default config file
+-	rm "$pkgdir"/etc/gvm/gvmd
+-}
+-
+-doc() {
+-	default_doc
+-	mkdir -p "$subpkgdir"/usr/share/doc/$pkgname
+-	cat >"$subpkgdir"/usr/share/doc/$pkgname/README.alpine <<EOF
+-	** Add texlive to generate PDF reports with
+-	** apk add texlive
+-EOF
+-}
+-
+-sha512sums="
+-4bff2cafab6672d30cac03c306083c703a42b299020fa662165143ef604a00cad0f1ce7e144005f2c9acb4dd5e2dd61ac0542b088328e8428f91a830fbbe5eed  gvmd-21.4.4.tar.gz
+-c90247bc8d0797f7d3e3ae0f87fd2bbf58ef67eb7fb60318928b174e366380d1f7cfc23fa9d4c552035d1d1b31577bc097ae9a1e51cfba2c36ed57bba3a52328  gvmd.initd
+-e1eeef173bfab7c750efcc7faa42cf7a1cfb9e6b137716063f273bc709c1346f11262dadbdb0c49822d885dc00177d8ccb91c0491ddc33cfee0a3827f11908f6  gvmd.logrotate
+-4fda7d5051f9d1ca069becbcc0e82b20d76fd9f7c7abf4a4f05ab55c17fba54dbe269607ee6360b034e8a1674a38680775e2ffc4120b12c7b679564ba4c87ed4  greenbone-certdata-sync.conf
+-1481eeb4182109295344768465a2db3895f51d39d6d2dee9a5db20db2ac53aec4df50eb2d5823c5a8d1f0897e284ad42c17ab59e3bef77614db6195dfbc5ae05  greenbone-scapdata-sync.conf
+-0734c6dc3ba065daeaeeb80aa23b52b141ff1056bffaa62a7eb6be5acf559a287354df418a40f804269a76644dbdc0f8c0229b380954628d6842168860bd344a  greenbone-nvt-sync.conf
+-b5411a618e62e5a64fae3441d7f8a4db1fb7675200d8ce5f8208b09c6459b33920f3a65519c8d17781929917eeb4966e60701e64612c6cfcb77101130f779992  added-missing-includes.patch
+-73e1d455573dc4f11e86904740ea5ea7163d76fd422b81978f2a2a7127a8b50f6a1ad5f1f259fb86469d4d3ce5754db549158477696bb92b2b783d19b7bdbc63  malloc-trim.patch
+-97f14a2c4427711b02135406def20e5533780fcab76284c039a941bd060ae910dbbf25b66051ae9b12e1a31cb13cbf461688cd06bf2803159db64e191999bd56  glib_full.patch
+-"
+diff -ruN aports2/community/gvmd/glib_full.patch aports/community/gvmd/glib_full.patch
+--- aports2/community/gvmd/glib_full.patch	2022-05-06 23:57:56.627338837 +0700
++++ aports/community/gvmd/glib_full.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,461 +0,0 @@
+-diff --git a/src/gmp.c b/src/gmp.c
+-index 9a5b6789a..170298097 100644
+---- a/src/gmp.c
+-+++ b/src/gmp.c
+-@@ -102,7 +102,7 @@
+- #include <assert.h>
+- #include <errno.h>
+- #include <fcntl.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <math.h>
+- #include <netinet/in.h>
+- #include <string.h>
+-diff --git a/src/gmp.h b/src/gmp.h
+-index 113bbdde7..fd39fab50 100644
+---- a/src/gmp.h
+-+++ b/src/gmp.h
+-@@ -27,7 +27,7 @@
+- #include "manage.h"
+- #include "types.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gnutls/gnutls.h>
+- #include <gvm/util/serverutils.h>
+- #include <sys/types.h>
+-diff --git a/src/gmp_base.h b/src/gmp_base.h
+-index 38a4bbfec..fdcc5bcb4 100644
+---- a/src/gmp_base.h
+-+++ b/src/gmp_base.h
+-@@ -19,7 +19,7 @@
+- #ifndef _GVMD_GMP_BASE_H
+- #define _GVMD_GMP_BASE_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /**
+-  * @brief A handle on a GMP parser.
+-diff --git a/src/gmp_configs.c b/src/gmp_configs.c
+-index a02956cc9..e912dcd62 100644
+---- a/src/gmp_configs.c
+-+++ b/src/gmp_configs.c
+-@@ -30,7 +30,7 @@
+- #include "manage_configs.h"
+- 
+- #include <assert.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <stdlib.h>
+- #include <string.h>
+- 
+-diff --git a/src/gmp_delete.h b/src/gmp_delete.h
+-index b9bf35d62..3675a8156 100644
+---- a/src/gmp_delete.h
+-+++ b/src/gmp_delete.h
+-@@ -21,7 +21,7 @@
+- 
+- #include "gmp_base.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- void
+- delete_start (const gchar *, const gchar *, const gchar **, const gchar **);
+-diff --git a/src/gmp_tickets.c b/src/gmp_tickets.c
+-index 3b60d92dd..50e1211eb 100644
+---- a/src/gmp_tickets.c
+-+++ b/src/gmp_tickets.c
+-@@ -28,7 +28,7 @@
+- #include "gmp_get.h"
+- #include "manage_tickets.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <stdlib.h>
+- #include <string.h>
+- 
+-diff --git a/src/gmp_tls_certificates.c b/src/gmp_tls_certificates.c
+-index c5b8a893f..939cbd644 100644
+---- a/src/gmp_tls_certificates.c
+-+++ b/src/gmp_tls_certificates.c
+-@@ -29,7 +29,7 @@
+- #include "gmp_get.h"
+- #include "manage_tls_certificates.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <stdlib.h>
+- #include <string.h>
+- 
+-diff --git a/src/gmpd.h b/src/gmpd.h
+-index 3bf2bca58..262d1ed75 100644
+---- a/src/gmpd.h
+-+++ b/src/gmpd.h
+-@@ -27,7 +27,7 @@
+- #include "manage.h"
+- #include "types.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gnutls/gnutls.h>
+- #include <gvm/util/serverutils.h>
+- #include <netinet/in.h>
+-diff --git a/src/gvmd.c b/src/gvmd.c
+-index a549446d3..8c4059655 100644
+---- a/src/gvmd.c
+-+++ b/src/gvmd.c
+-@@ -72,8 +72,8 @@
+- #include <assert.h>
+- #include <errno.h>
+- #include <fcntl.h>
+--#include <glib.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <gnutls/gnutls.h>
+- #include <grp.h>
+- #include <netdb.h>
+-@@ -90,7 +90,7 @@
+- #include <sys/types.h>
+- #include <sys/wait.h>
+- #include <unistd.h>
+--#include <glib/gmessages.h>
+-+#include <glib-2.0/glib/gmessages.h>
+- 
+- #include <gvm/base/pidfile.h>
+- #include <gvm/base/pwpolicy.h>
+-diff --git a/src/iterator.h b/src/iterator.h
+-index c9d0b4e8e..97bf8c182 100644
+---- a/src/iterator.h
+-+++ b/src/iterator.h
+-@@ -29,7 +29,7 @@
+- 
+- #include "lsc_crypt.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /* Types. */
+- 
+-diff --git a/src/lsc_crypt.c b/src/lsc_crypt.c
+-index 0c1b35235..e568661ed 100644
+---- a/src/lsc_crypt.c
+-+++ b/src/lsc_crypt.c
+-@@ -23,8 +23,8 @@
+-  * This file provides support for encrypting LSC credentials.
+-  */
+- 
+--#include <glib.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <stdlib.h>
+- #include <string.h>
+- #include <stdarg.h>
+-diff --git a/src/lsc_crypt.h b/src/lsc_crypt.h
+-index 74cb2e306..802eedf6a 100644
+---- a/src/lsc_crypt.h
+-+++ b/src/lsc_crypt.h
+-@@ -24,7 +24,7 @@
+- #ifndef _GVMD_LSC_CRYPT_H
+- #define _GVMD_LSC_CRYPT_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /* (Defined in gvmd.c) */
+- extern int disable_encrypted_credentials;
+-diff --git a/src/lsc_user.c b/src/lsc_user.c
+-index f56b77301..f17d9847b 100644
+---- a/src/lsc_user.c
+-+++ b/src/lsc_user.c
+-@@ -23,8 +23,8 @@
+-  * This file provides support for generating packages for LSC credentials.
+-  */
+- 
+--#include <glib.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <stdio.h>
+- #include <stdlib.h>
+- #include <string.h>
+-diff --git a/src/lsc_user.h b/src/lsc_user.h
+-index 941a86212..2faa20997 100644
+---- a/src/lsc_user.h
+-+++ b/src/lsc_user.h
+-@@ -24,7 +24,7 @@
+- #ifndef _GVMD_LSC_USER_H
+- #define _GVMD_LSC_USER_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- int
+- lsc_user_keys_create (const gchar *, gchar **);
+-diff --git a/src/manage.c b/src/manage.c
+-index da2a19fea..446edf7b4 100644
+---- a/src/manage.c
+-+++ b/src/manage.c
+-@@ -64,7 +64,7 @@
+- #include <errno.h>
+- #include <dirent.h>
+- #include <fcntl.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gnutls/x509.h> /* for gnutls_x509_crt_... */
+- #include <math.h>
+- #include <locale.h>
+-diff --git a/src/manage.h b/src/manage.h
+-index 8b4223007..de2f5077d 100644
+---- a/src/manage.h
+-+++ b/src/manage.h
+-@@ -30,7 +30,7 @@
+- #include "utils.h"
+- 
+- #include <stdio.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gnutls/gnutls.h>
+- 
+- #include <gvm/base/array.h>
+-diff --git a/src/manage_acl.h b/src/manage_acl.h
+-index 58b0ec1f0..fe941c2c0 100644
+---- a/src/manage_acl.h
+-+++ b/src/manage_acl.h
+-@@ -25,7 +25,7 @@
+- #define _GVMD_MANAGE_ACL_H
+- 
+- #include "manage_sql.h"
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /**
+-  * @brief Generate SQL for user permission check.
+-diff --git a/src/manage_configs.c b/src/manage_configs.c
+-index 520305a72..0c55228e1 100644
+---- a/src/manage_configs.c
+-+++ b/src/manage_configs.c
+-@@ -30,7 +30,7 @@
+- #include "utils.h"
+- 
+- #include <errno.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/util/fileutils.h>
+- #include <stdlib.h>
+- #include <string.h>
+-diff --git a/src/manage_get.h b/src/manage_get.h
+-index aad04cde8..201954beb 100644
+---- a/src/manage_get.h
+-+++ b/src/manage_get.h
+-@@ -26,7 +26,7 @@
+- 
+- #include "iterator.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /**
+-  * @brief Command data for a get command.
+-diff --git a/src/manage_migrators.c b/src/manage_migrators.c
+-index d665a5eb4..851c8d416 100644
+---- a/src/manage_migrators.c
+-+++ b/src/manage_migrators.c
+-@@ -117,7 +117,7 @@
+- 
+- #include <assert.h>
+- #include <errno.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <stdlib.h>
+- #include <string.h>
+- #include <sys/param.h>
+-diff --git a/src/manage_port_lists.h b/src/manage_port_lists.h
+-index 9cbf222ff..7852e0187 100644
+---- a/src/manage_port_lists.h
+-+++ b/src/manage_port_lists.h
+-@@ -21,7 +21,7 @@
+- 
+- #include "manage.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- gboolean
+- find_port_list (const char*, port_list_t*);
+-diff --git a/src/manage_report_formats.c b/src/manage_report_formats.c
+-index acfa13ea4..5f927a6ef 100644
+---- a/src/manage_report_formats.c
+-+++ b/src/manage_report_formats.c
+-@@ -32,7 +32,7 @@
+- 
+- #include <assert.h>
+- #include <errno.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/util/fileutils.h>
+- #include <locale.h>
+- #include <stdlib.h>
+-diff --git a/src/manage_report_formats.h b/src/manage_report_formats.h
+-index 2e0e2dde7..a9ca4e69c 100644
+---- a/src/manage_report_formats.h
+-+++ b/src/manage_report_formats.h
+-@@ -21,7 +21,7 @@
+- 
+- #include "manage.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- gboolean
+- find_report_format_with_permission (const char*, report_format_t*,
+-diff --git a/src/manage_sql.c b/src/manage_sql.c
+-index d20717317..10ea21bab 100644
+---- a/src/manage_sql.c
+-+++ b/src/manage_sql.c
+-@@ -51,7 +51,7 @@
+- #include <ctype.h>
+- #include <dirent.h>
+- #include <errno.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <gnutls/x509.h>
+- #include <malloc.h>
+- #include <pwd.h>
+-diff --git a/src/manage_sql_configs.c b/src/manage_sql_configs.c
+-index fc4fa34b4..5f3528386 100644
+---- a/src/manage_sql_configs.c
+-+++ b/src/manage_sql_configs.c
+-@@ -32,7 +32,7 @@
+- 
+- #include <assert.h>
+- #include <errno.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <stdlib.h>
+- #include <string.h>
+- 
+-diff --git a/src/manage_sql_port_lists.c b/src/manage_sql_port_lists.c
+-index a9083afd0..360b19a47 100644
+---- a/src/manage_sql_port_lists.c
+-+++ b/src/manage_sql_port_lists.c
+-@@ -29,8 +29,8 @@
+- #include "sql.h"
+- 
+- #include <errno.h>
+--#include <glib.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <stdlib.h>
+- #include <string.h>
+- #include <strings.h>
+-diff --git a/src/manage_sql_report_formats.c b/src/manage_sql_report_formats.c
+-index 98f2a4e56..2c7e72e1f 100644
+---- a/src/manage_sql_report_formats.c
+-+++ b/src/manage_sql_report_formats.c
+-@@ -30,8 +30,8 @@
+- #include "utils.h"
+- 
+- #include <errno.h>
+--#include <glib.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <grp.h>
+- #include <libgen.h>
+- #include <limits.h>
+-diff --git a/src/manage_sql_report_formats.h b/src/manage_sql_report_formats.h
+-index 2e3fe0de2..59ba267ce 100644
+---- a/src/manage_sql_report_formats.h
+-+++ b/src/manage_sql_report_formats.h
+-@@ -22,7 +22,7 @@
+- #include "manage.h"
+- #include "manage_sql.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- gboolean
+- lookup_report_format (const char*, report_format_t*);
+-diff --git a/src/manage_sql_secinfo.c b/src/manage_sql_secinfo.c
+-index f8cc192b2..02e7d68b1 100644
+---- a/src/manage_sql_secinfo.c
+-+++ b/src/manage_sql_secinfo.c
+-@@ -38,7 +38,7 @@
+- #include <fcntl.h>
+- #include <fnmatch.h>
+- #include <ftw.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <math.h>
+- #include <stdlib.h>
+- #include <string.h>
+-diff --git a/src/manage_sql_secinfo.h b/src/manage_sql_secinfo.h
+-index 688dc30df..3df082035 100644
+---- a/src/manage_sql_secinfo.h
+-+++ b/src/manage_sql_secinfo.h
+-@@ -21,7 +21,7 @@
+-  * @brief Manager Manage library: SQL backend headers.
+-  */
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #ifndef _GVMD_MANAGE_SQL_SECINFO_H
+- #define _GVMD_MANAGE_SQL_SECINFO_H
+- 
+-diff --git a/src/manage_utils.h b/src/manage_utils.h
+-index d5947542b..28db6eb73 100644
+---- a/src/manage_utils.h
+-+++ b/src/manage_utils.h
+-@@ -27,7 +27,7 @@
+- /* For strptime in time.h. */
+- #undef _XOPEN_SOURCE
+- #define _XOPEN_SOURCE
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <libical/ical.h>
+- #include <time.h>
+- 
+-diff --git a/src/sql.h b/src/sql.h
+-index 1a635e3bb..5575b7880 100644
+---- a/src/sql.h
+-+++ b/src/sql.h
+-@@ -27,7 +27,7 @@
+- #include "iterator.h"
+- #include "manage.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /* Helpers. */
+- 
+-diff --git a/src/sql_pg.c b/src/sql_pg.c
+-index 435b09224..926370d7e 100644
+---- a/src/sql_pg.c
+-+++ b/src/sql_pg.c
+-@@ -29,7 +29,7 @@
+- #include <endian.h>
+- #include <errno.h>
+- #include <arpa/inet.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <inttypes.h>
+- #include <netinet/in.h>
+- #include <libpq-fe.h>
+-diff --git a/src/utils.h b/src/utils.h
+-index 7b951ba75..4a2ac9424 100644
+---- a/src/utils.h
+-+++ b/src/utils.h
+-@@ -24,7 +24,7 @@
+- #ifndef _GVMD_UTILS_H
+- #define _GVMD_UTILS_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/util/xmlutils.h>
+- #include <time.h>
+- 
+diff -ruN aports2/community/gvmd/greenbone-certdata-sync.conf aports/community/gvmd/greenbone-certdata-sync.conf
+--- aports2/community/gvmd/greenbone-certdata-sync.conf	2022-05-06 23:57:56.627338837 +0700
++++ aports/community/gvmd/greenbone-certdata-sync.conf	1970-01-01 08:00:00.000000000 +0800
+@@ -1 +0,0 @@
+-COMMUNITY_CERT_RSYNC_FEED="rsync://feed.community.greenbone.net:/cert-data"
+diff -ruN aports2/community/gvmd/greenbone-nvt-sync.conf aports/community/gvmd/greenbone-nvt-sync.conf
+--- aports2/community/gvmd/greenbone-nvt-sync.conf	2022-05-06 23:57:56.627338837 +0700
++++ aports/community/gvmd/greenbone-nvt-sync.conf	1970-01-01 08:00:00.000000000 +0800
+@@ -1 +0,0 @@
+-COMMUNITY_NVT_RSYNC_FEED="rsync://feed.community.greenbone.net:/nvt-feed"
+diff -ruN aports2/community/gvmd/greenbone-scapdata-sync.conf aports/community/gvmd/greenbone-scapdata-sync.conf
+--- aports2/community/gvmd/greenbone-scapdata-sync.conf	2022-05-06 23:57:56.627338837 +0700
++++ aports/community/gvmd/greenbone-scapdata-sync.conf	1970-01-01 08:00:00.000000000 +0800
+@@ -1 +0,0 @@
+-COMMUNITY_SCAP_RSYNC_FEED="rsync://feed.community.greenbone.net:/scap-data"
+diff -ruN aports2/community/gvmd/gvmd.initd aports/community/gvmd/gvmd.initd
+--- aports2/community/gvmd/gvmd.initd	2022-05-06 23:57:56.627338837 +0700
++++ aports/community/gvmd/gvmd.initd	1970-01-01 08:00:00.000000000 +0800
+@@ -1,31 +0,0 @@
+-#!/sbin/openrc-run
+-
+-name="Greenbone Vulnerability Manager"
+-command=/usr/bin/gvmd
+-pidfile=/run/gvmd/${RC_SVCNAME}.pid
+-command_background="true"
+-
+-: ${GVMD_USER:=gvm}
+-: ${GVMD_GROUP:=gvm}
+-: ${GVMD_TIMEOUT:=30}
+-: ${GVMD_LISTEN_ADDRESS_UNIX:=$(dirname $pidfile)/gvmd.sock}
+-: ${GVMD_SCANNER_HOST:=/run/ospd/ospd.sock}
+-: ${GVMD_LISTEN_OWNER:=$GVMD_USER}
+-: ${GVMD_LISTEN_GROUP=$GVMD_GROUP}
+-: ${GVMD_LISTEN_MODE:=755}
+-: ${GVMD_GNUTLS_PRIORITIES:=SECURE256:+SUITEB192:+SECURE192:+SECURE128:+SUITEB128:-MD5:-SHA1:-VERS-TLS1.0:-VERS-TLS1.1:-VERS-SSL3.0}
+-: ${GVMD_LISTEN_ADDRESS_TCP:=127.0.0.1}
+-: ${GVMD_PORT:=9390}
+-
+-command_user="${GVMD_USER}:${GVMD_GROUP}"
+-retry="${GVMD_TIMEOUT}"
+-command_args="--foreground ${GVMD_OPTIONS} --listen=${GVMD_LISTEN_ADDRESS_TCP} --port=${GVMD_PORT} --scanner-host=${GVMD_SCANNER_HOST} --gnutls-priorities=${GVMD_GNUTLS_PRIORITIES}"
+-
+-depend() {
+-	after firewall
+-	need net ospd-openvas
+-}
+-
+-start_pre() {
+-	checkpath --directory --mode 775 --owner "$command_user" ${pidfile%/*} /var/log/gvm
+-}
+diff -ruN aports2/community/gvmd/gvmd.logrotate aports/community/gvmd/gvmd.logrotate
+--- aports2/community/gvmd/gvmd.logrotate	2022-05-06 23:57:56.627338837 +0700
++++ aports/community/gvmd/gvmd.logrotate	1970-01-01 08:00:00.000000000 +0800
+@@ -1,13 +0,0 @@
+-# Copyright 1999-2019 Gentoo Authors
+-# Distributed under the terms of the GNU General Public License v2
+-# Daemon ignore HUP so we use 'copytruncate' instead of 'create' 
+-# with safe file size to prevent losing log entries.
+-
+-/var/log/gvm/gvmd.log {
+-	compress
+-	missingok
+-	notifempty
+-	sharedscripts
+-	copytruncate
+-	maxsize 10M
+-}
+diff -ruN aports2/community/gvmd/malloc-trim.patch aports/community/gvmd/malloc-trim.patch
+--- aports2/community/gvmd/malloc-trim.patch	2022-05-06 23:57:56.627338837 +0700
++++ aports/community/gvmd/malloc-trim.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,15 +0,0 @@
+-diff --git a/src/manage_sql.c b/src/manage_sql.c
+-index b41e5c6..48e3fdb 100644
+---- a/src/manage_sql.c
+-+++ b/src/manage_sql.c
+-@@ -15276,7 +15276,9 @@ update_nvti_cache ()
+- 
+-   cleanup_iterator (&nvts);
+- 
+--  malloc_trim (0);
+-+#ifdef __GLIBC__
+-+   malloc_trim (0);
+-+#endif
+- }
+- 
+- /**

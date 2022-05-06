@@ -1,30 +1,737 @@
 diff -ruN aports2/community/openvas/APKBUILD aports/community/openvas/APKBUILD
---- aports2/community/openvas/APKBUILD	2021-07-04 19:05:22.950943781 +0200
-+++ aports/community/openvas/APKBUILD	2021-06-28 21:19:04.076047047 +0200
-@@ -3,7 +3,7 @@
- # Maintainer: Francesco Colista <fcolista@alpinelinux.org>
- pkgname=openvas
- pkgver=21.4.1
--pkgrel=10
-+pkgrel=0
- pkgdesc="Open Vulnerability Assessment Scanner"
- url="https://openvas.org/"
- arch="all !x86 !armhf !armv7" # Fails to build, see #12616
-@@ -15,7 +15,7 @@
- makedepends="cmake bison gvm-libs-dev glib-dev libgcrypt-dev
- 	doxygen xmltoman graphviz libpcap-dev gpgme-dev
- 	clang-dev libssh-dev libksba-dev net-snmp-dev
--	linux-headers glibmm-dev flex"
-+	linux-headers glibmm-dev"
- subpackages="$pkgname-doc $pkgname-config"
- source="$pkgname-$pkgver.tar.gz::https://github.com/greenbone/openvas/archive/v$pkgver.tar.gz
- 	greenbone-nvt-sync.cron
-@@ -39,7 +39,7 @@
- 		-DSYSCONFDIR=/etc \
- 		-DLOCALSTATEDIR=/var \
- 		-DOPENVAS_RUN_DIR=/run/ospd \
+--- aports2/community/openvas/APKBUILD	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas/APKBUILD	1970-01-01 08:00:00.000000000 +0800
+@@ -1,76 +0,0 @@
+-# Contributor: Leonardo Arena <rnalrd@alpinelinux.org>
+-# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+-# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+-pkgname=openvas
+-pkgver=21.4.4
+-pkgrel=11
+-pkgdesc="Open Vulnerability Assessment Scanner"
+-url="https://openvas.org/"
+-arch="all !x86 !armhf !armv7" # Fails to build, see #12616
+-license="GPL-2.0-only"
+-depends="redis nmap coreutils openssl util-linux gcompat"
+-install="$pkgname.post-install"
+-pkgusers="gvm"
+-checkdepends="cppcheck"
+-makedepends="cmake bison gvm-libs-dev glib-dev libgcrypt-dev
+-	doxygen xmltoman graphviz libpcap-dev gpgme-dev
+-	clang-dev libssh-dev libksba-dev net-snmp-dev
+-	linux-headers glibmm-dev flex gcompat"
+-subpackages="$pkgname-dbg $pkgname-doc $pkgname-config"
+-source="$pkgname-$pkgver.tar.gz::https://github.com/greenbone/openvas/archive/v$pkgver.tar.gz
+-	greenbone-nvt-sync.cron
+-	execinfo-musl-fix.patch
+-	malloc-trim.patch
+-	tcp_mss_include.patch
+-	openvas-sysctl.conf
+-	glib_full.patch"
+-options="!check" # dependency tree not available outside x86
+-builddir="$srcdir"/$pkgname-scanner-$pkgver
+-
+-prepare() {
+-	default_prepare
+-	mkdir build
+-}
+-
+-build() {
+-	cd $builddir/build
+-	cmake -DCMAKE_BUILD_TYPE=None \
+-		-DSBINDIR=/usr/bin \
+-		-DCMAKE_INSTALL_PREFIX=/usr \
+-		-DSYSCONFDIR=/etc \
+-		-DLOCALSTATEDIR=/var \
+-		-DOPENVAS_RUN_DIR=/run/ospd \
 -		..
-+	..
- 	make
- }
- 
+-	make
+-}
+-
+-check() {
+-	cd $builddir/build
+-	make check
+-}
+-
+-package() {
+-	cd $builddir/build
+-	make DESTDIR="$pkgdir" install
+-	chown $pkgusers "$pkgdir"/etc/openvas
+-	chown $pkgusers "$pkgdir"/var/log/gvm
+-	chown $pkgusers "$pkgdir"/var/lib/openvas/plugins
+-}
+-
+-config() {
+-	pkgdesc="Configuration files and scripts for openvas"
+-	install -Dm744 "$srcdir"/greenbone-nvt-sync.cron \
+-		"$subpkgdir"/etc/periodic/daily/greenbone-nvt-sync
+-	install -Dm644 "$builddir"/config/redis-openvas.conf "$subpkgdir"/etc/redis-openvas.conf
+-	install -Dm644 "$srcdir"/openvas-sysctl.conf "$subpkgdir"/etc/sysctl.d/02-openvas.conf
+-}
+-
+-sha512sums="
+-f2fe1f802b14fc41ee0d7657d031d318b651c3ec9ef554b33379a7459d40c17b44525c8f666ccb9670868576c101766936dd0c700778e46683bf43f0683834b6  openvas-21.4.4.tar.gz
+-da53e5c5e3ab70749249c2bf6c4fe0e0d17a2afb39d4519eb7fdf873c3fedf925183db050ab5395a3fe7f1ce79d95bf4f55c69611205d00dc519ce15418bd915  greenbone-nvt-sync.cron
+-694015233c1c118bb31c56f2120d4eea7f4b5807b7173b65a5bea64d8880c7d3ae894b227438f7dd3ebdbd9687429a0de893bb8cbe66c47a3fc3163207ad96b5  execinfo-musl-fix.patch
+-ae4f35ba0705eb16e98765f370a3225bbca6de4bcffeff20cde1d6d1a3487036ff5f683d9e38f0df3308770656876e240fc75c62ba9e2bb1d2e4998ac80e6395  malloc-trim.patch
+-1401172c36bdafd16d4eb5189c322a945b872f6768d1fc1368e49a2da25f7eec1b65ea020069174dd9c9d64d77e31b7acdaf9c46609255063031ff275ebf3da5  tcp_mss_include.patch
+-1b85a5511e73a79bc2c9e11e773fee4d641a2f55760eb8e3f4a41cc0d73007e2f6300832c35dd2408838eb42efef54ba6e238a0ed551e34d21becc2aef499991  openvas-sysctl.conf
+-2f53d5ca216aa611c68490798365892848c39a5df38efee38a711c7780e50c587ea7f43847557b9584d993c0c23318d13c35b8732328be03e7decf903a48cec3  glib_full.patch
+-"
+diff -ruN aports2/community/openvas/execinfo-musl-fix.patch aports/community/openvas/execinfo-musl-fix.patch
+--- aports2/community/openvas/execinfo-musl-fix.patch	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas/execinfo-musl-fix.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,40 +0,0 @@
+-diff --git a/src/sighand.c b/src/sighand.c
+-index 38205ec4..72b2e056 100644
+---- a/src/sighand.c
+-+++ b/src/sighand.c
+-@@ -22,8 +22,9 @@
+-  * @file sighand.c
+-  * @brief Provides signal handling functions.
+-  */
+--
+-+#ifdef HAVE_EXECINFO_H
+- #include <execinfo.h> /* for backtrace() */
+-+#endif
+- #include <glib.h>     /* for G_LOG_DOMAIN, for g_critical() */
+- #include <signal.h>   /* for kill() */
+- #include <sys/wait.h> /* for waitpid() */
+-@@ -105,7 +106,7 @@ sighand_chld (int sig)
+-   (void) sig;
+-   waitpid (-1, NULL, WNOHANG);
+- }
+--
+-+#ifdef HAVE_EXECINFO_H
+- static void
+- print_trace (void)
+- {
+-@@ -124,12 +125,15 @@ print_trace (void)
+- 
+-   g_free (strings);
+- }
+-+#endif
+- 
+- void
+- sighand_segv (int given_signal)
+- {
+-   signal (SIGSEGV, _exit);
+-+#ifdef HAVE_EXECINFO_H
+-   print_trace ();
+-+#endif
+-   make_em_die (SIGTERM);
+-   /* Raise signal again, to exit with the correct return value,
+-    * and to enable core dumping. */
+diff -ruN aports2/community/openvas/glib_full.patch aports/community/openvas/glib_full.patch
+--- aports2/community/openvas/glib_full.patch	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas/glib_full.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,530 +0,0 @@
+-diff --git a/misc/network.c b/misc/network.c
+-index e4227dc9..eb4e98de 100644
+---- a/misc/network.c
+-+++ b/misc/network.c
+-@@ -29,7 +29,7 @@
+- #include <arpa/inet.h> /* for inet_pton */
+- #include <errno.h>
+- #include <fcntl.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gnutls/gnutls.h>
+- #include <gnutls/x509.h>
+- #include <gvm/base/logging.h>
+-diff --git a/misc/scanneraux.h b/misc/scanneraux.h
+-index 3f852a7f..d107678f 100644
+---- a/misc/scanneraux.h
+-+++ b/misc/scanneraux.h
+-@@ -25,7 +25,7 @@
+- #ifndef _OPENVAS_SCANNERAUX_H
+- #define _OPENVAS_SCANNERAUX_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/nvti.h>
+- #include <gvm/util/kb.h>
+- 
+-diff --git a/misc/strutils.c b/misc/strutils.c
+-index 829c2939..21dbb84f 100644
+---- a/misc/strutils.c
+-+++ b/misc/strutils.c
+-@@ -16,7 +16,7 @@
+-  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+-  */
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /**
+-  * @brief Matches a string against a pattern.
+-diff --git a/misc/strutils.h b/misc/strutils.h
+-index 8e2a595b..88d39804 100644
+---- a/misc/strutils.h
+-+++ b/misc/strutils.h
+-@@ -19,7 +19,7 @@
+- #ifndef MISC2_STRUTILS_H__
+- #define MISC2_STRUTILS_H__
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- int
+- str_match (const gchar *, const gchar *, int);
+-diff --git a/misc/vendorversion.c b/misc/vendorversion.c
+-index b816f02a..1440e43b 100644
+---- a/misc/vendorversion.c
+-+++ b/misc/vendorversion.c
+-@@ -24,7 +24,7 @@
+- 
+- #include "vendorversion.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /**
+-  * @brief Vendor version, or NULL.
+-diff --git a/misc/vendorversion.h b/misc/vendorversion.h
+-index e3291e8a..1305de16 100644
+---- a/misc/vendorversion.h
+-+++ b/misc/vendorversion.h
+-@@ -25,7 +25,7 @@
+- #ifndef _OPENVAS_VENDORVERSION_H
+- #define _OPENVAS_VENDORVERSION_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- const gchar *
+- vendor_version_get (void);
+-diff --git a/nasl/capture_packet.c b/nasl/capture_packet.c
+-index 1013d27f..5876b9e1 100644
+---- a/nasl/capture_packet.c
+-+++ b/nasl/capture_packet.c
+-@@ -22,7 +22,7 @@
+- #include "../misc/pcap_openvas.h" /* for get_datalink_size */
+- 
+- #include <arpa/inet.h> /* for inet_ntoa */
+--#include <glib.h>      /* for gfree */
+-+#include <glib-2.0/glib.h>      /* for gfree */
+- #include <netinet/ip.h>
+- #include <pcap.h>
+- #include <string.h> /* for bcopy */
+-diff --git a/nasl/exec.c b/nasl/exec.c
+-index 5157cdf2..304cccc9 100644
+---- a/nasl/exec.c
+-+++ b/nasl/exec.c
+-@@ -31,8 +31,8 @@
+- #include "nasl_tree.h"
+- #include "nasl_var.h"
+- 
+--#include <glib.h>        /* for g_get_current_dir and others */
+--#include <glib/gstdio.h> /* for g_chdir */
+-+#include <glib-2.0/glib.h>        /* for g_get_current_dir and others */
+-+#include <glib-2.0/glib/gstdio.h> /* for g_chdir */
+- #include <gvm/base/logging.h>
+- #include <gvm/base/prefs.h>     /* for prefs_get */
+- #include <gvm/util/nvticache.h> /* for nvticache_get_kb */
+-diff --git a/nasl/iconv.c b/nasl/iconv.c
+-index 4fff507a..88749fd4 100644
+---- a/nasl/iconv.c
+-+++ b/nasl/iconv.c
+-@@ -29,7 +29,7 @@
+- #include "charset.h"
+- #include "smb.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- typedef unsigned int bool;
+- 
+-diff --git a/nasl/nasl-lint.c b/nasl/nasl-lint.c
+-index 1a4f3e9f..34690b0b 100644
+---- a/nasl/nasl-lint.c
+-+++ b/nasl/nasl-lint.c
+-@@ -24,8 +24,8 @@
+- 
+- #include "nasl.h" /* exec_nasl_script */
+- 
+--#include <gio/gio.h> /* g_file_... */
+--#include <glib.h>    /* gchar, g_malloc, g_error, g_print, ... */
+-+#include <glib-2.0/gio/gio.h> /* g_file_... */
+-+#include <glib-2.0/glib.h>    /* gchar, g_malloc, g_error, g_print, ... */
+- #include <stdio.h>   /* for printf */
+- #include <stdlib.h>  /* for exit */
+- 
+-diff --git a/nasl/nasl.c b/nasl/nasl.c
+-index 5061f05e..6deb642d 100644
+---- a/nasl/nasl.c
+-+++ b/nasl/nasl.c
+-@@ -32,7 +32,7 @@
+- 
+- #include <errno.h>  /* for errno */
+- #include <gcrypt.h> /* for gcry_control */
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gnutls/gnutls.h>       /* for gnutls_check_version */
+- #include <gpgme.h>               /* for gpgme_check_version */
+- #include <gvm/base/hosts.h>      /* for gvm_hosts_* and gvm_host_* */
+-diff --git a/nasl/nasl.h b/nasl/nasl.h
+-index e341e316..6e17a235 100644
+---- a/nasl/nasl.h
+-+++ b/nasl/nasl.h
+-@@ -21,7 +21,7 @@
+- 
+- #include "../misc/scanneraux.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /* Signature information extraction and verification (not nasl- specific
+-   anymore, thus likely to be moved to openvas-libraries): */
+-diff --git a/nasl/nasl_builtin_find_service.c b/nasl/nasl_builtin_find_service.c
+-index d3c55109..7de2871c 100644
+---- a/nasl/nasl_builtin_find_service.c
+-+++ b/nasl/nasl_builtin_find_service.c
+-@@ -25,7 +25,7 @@
+- 
+- #include <ctype.h> /* for tolower() */
+- #include <errno.h> /* for errno() */
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/util/nvticache.h>
+- #include <regex.h>     /* for regex_t */
+- #include <signal.h>    /* for signal() */
+-diff --git a/nasl/nasl_builtin_openvas_tcp_scanner.c b/nasl/nasl_builtin_openvas_tcp_scanner.c
+-index 96a12df6..44d7d99a 100644
+---- a/nasl/nasl_builtin_openvas_tcp_scanner.c
+-+++ b/nasl/nasl_builtin_openvas_tcp_scanner.c
+-@@ -22,7 +22,7 @@
+- 
+- #include <errno.h> /* for errno() */
+- #include <fcntl.h> /* for fcntl() */
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/logging.h>
+- #include <gvm/base/prefs.h> /* for prefs_get */
+- #include <netdb.h>          /* for getprotobyname() */
+-diff --git a/nasl/nasl_cert.c b/nasl/nasl_cert.c
+-index 52ffb63d..bfd7641e 100644
+---- a/nasl/nasl_cert.c
+-+++ b/nasl/nasl_cert.c
+-@@ -38,8 +38,8 @@
+- 
+- #include <errno.h>
+- #include <gcrypt.h>
+--#include <glib.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <gnutls/gnutls.h>
+- #include <gnutls/x509.h>
+- #include <gvm/base/logging.h>
+-diff --git a/nasl/nasl_cmd_exec.c b/nasl/nasl_cmd_exec.c
+-index 3da83772..ab19f88a 100644
+---- a/nasl/nasl_cmd_exec.c
+-+++ b/nasl/nasl_cmd_exec.c
+-@@ -33,7 +33,7 @@
+- 
+- #include <errno.h>                    /* for errno */
+- #include <fcntl.h>                    /* for open */
+--#include <glib.h>                     /* for g_get_tmp_dir */
+-+#include <glib-2.0/glib.h>                     /* for g_get_tmp_dir */
+- #include <gvm/base/drop_privileges.h> /* for drop_privileges */
+- #include <gvm/base/prefs.h>           /* for prefs_get_bool() */
+- #include <signal.h>                   /* for kill */
+-diff --git a/nasl/nasl_crypto.c b/nasl/nasl_crypto.c
+-index 3002d8b8..bfd551e8 100644
+---- a/nasl/nasl_crypto.c
+-+++ b/nasl/nasl_crypto.c
+-@@ -41,7 +41,7 @@
+- #include <assert.h>
+- #include <ctype.h>
+- #include <gcrypt.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/logging.h>
+- #include <stdlib.h>
+- 
+-diff --git a/nasl/nasl_func.c b/nasl/nasl_func.c
+-index 5f4829ae..83a77c87 100644
+---- a/nasl/nasl_func.c
+-+++ b/nasl/nasl_func.c
+-@@ -25,7 +25,7 @@
+- #include "nasl_tree.h"
+- #include "nasl_var.h"
+- 
+--#include <glib.h>   /* for g_free */
+-+#include <glib-2.0/glib.h>   /* for g_free */
+- #include <stdlib.h> /* for free */
+- #include <string.h> /* for strcmp */
+- 
+-diff --git a/nasl/nasl_grammar.y b/nasl/nasl_grammar.y
+-index 4b3be046..c5f4118a 100644
+---- a/nasl/nasl_grammar.y
+-+++ b/nasl/nasl_grammar.y
+-@@ -31,7 +31,7 @@
+- #include <string.h> /* for strlen */
+- #include <sys/stat.h> /* for stat */
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- #include "nasl_tree.h"
+- #include "nasl_global_ctxt.h"
+-diff --git a/nasl/nasl_http.c b/nasl/nasl_http.c
+-index bb897f90..1d463913 100644
+---- a/nasl/nasl_http.c
+-+++ b/nasl/nasl_http.c
+-@@ -30,7 +30,7 @@
+- #include "nasl_var.h"
+- 
+- #include <ctype.h> /* for isspace */
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/prefs.h> /* for prefs_get */
+- #include <gvm/util/kb.h>    /* for kb_item_get_str */
+- #include <string.h>         /* for strlen */
+-diff --git a/nasl/nasl_isotime.c b/nasl/nasl_isotime.c
+-index cb3171a0..7176428a 100644
+---- a/nasl/nasl_isotime.c
+-+++ b/nasl/nasl_isotime.c
+-@@ -55,8 +55,8 @@
+- #include "nasl_var.h"
+- 
+- #include <ctype.h>
+--#include <glib.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <stdio.h>
+- #include <stdlib.h>
+- #include <string.h>
+-diff --git a/nasl/nasl_lex_ctxt.c b/nasl/nasl_lex_ctxt.c
+-index 68b011ca..97f431a1 100644
+---- a/nasl/nasl_lex_ctxt.c
+-+++ b/nasl/nasl_lex_ctxt.c
+-@@ -23,7 +23,7 @@
+- #include "nasl_tree.h"
+- #include "nasl_var.h"
+- 
+--#include <glib.h> /* for g_free() */
+-+#include <glib-2.0/glib.h> /* for g_free() */
+- 
+- void
+- init_nasl_library (lex_ctxt *);
+-diff --git a/nasl/nasl_lex_ctxt.h b/nasl/nasl_lex_ctxt.h
+-index cd140088..8bad9916 100644
+---- a/nasl/nasl_lex_ctxt.h
+-+++ b/nasl/nasl_lex_ctxt.h
+-@@ -19,7 +19,7 @@
+- #ifndef _NASL_LEX_CTXT_H
+- #define _NASL_LEX_CTXT_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /* for tree_cell */
+- #include "nasl_tree.h"
+-diff --git a/nasl/nasl_misc_funcs.c b/nasl/nasl_misc_funcs.c
+-index b687bb37..d98b8b5d 100644
+---- a/nasl/nasl_misc_funcs.c
+-+++ b/nasl/nasl_misc_funcs.c
+-@@ -38,7 +38,7 @@
+- #include "nasl_var.h"
+- 
+- #include <errno.h> /* for errno */
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/util/compressutils.h> /* for gvm_uncompress */
+- #include <gvm/util/kb.h>            /* for KB_TYPE_STR */
+- #include <stdlib.h>                 /* for lrand48 */
+-diff --git a/nasl/nasl_scanner_glue.c b/nasl/nasl_scanner_glue.c
+-index 7dbb0502..8a7c9213 100644
+---- a/nasl/nasl_scanner_glue.c
+-+++ b/nasl/nasl_scanner_glue.c
+-@@ -40,7 +40,7 @@
+- #include <ctype.h> /* for isdigit */
+- #include <errno.h> /* for errno */
+- #include <fcntl.h> /* for open */
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/logging.h>
+- #include <gvm/base/prefs.h> /* for prefs_get */
+- #include <gvm/util/kb.h>    /* for KB_TYPE_INT */
+-diff --git a/nasl/nasl_ssh.c b/nasl/nasl_ssh.c
+-index 1c615592..ff17e1dc 100644
+---- a/nasl/nasl_ssh.c
+-+++ b/nasl/nasl_ssh.c
+-@@ -42,8 +42,8 @@
+- #include <ctype.h>
+- #include <errno.h>
+- #include <fcntl.h>
+--#include <glib.h>
+--#include <glib/gstdio.h>
+-+#include <glib-2.0/glib.h>
+-+#include <glib-2.0/glib/gstdio.h>
+- #include <gvm/base/logging.h>
+- #include <gvm/base/networking.h>
+- #include <gvm/base/prefs.h> /* for prefs_get() */
+-diff --git a/nasl/nasl_text_utils.c b/nasl/nasl_text_utils.c
+-index 137fb24f..ea12ef82 100644
+---- a/nasl/nasl_text_utils.c
+-+++ b/nasl/nasl_text_utils.c
+-@@ -36,7 +36,7 @@
+- #include "nasl_var.h"
+- 
+- #include <ctype.h>  /* for isspace */
+--#include <glib.h>   /* for g_free */
+-+#include <glib-2.0/glib.h>   /* for g_free */
+- #include <regex.h>  /* for regex_t */
+- #include <string.h> /* for strlen */
+- #include <string.h> /* for memmem */
+-diff --git a/nasl/nasl_tree.c b/nasl/nasl_tree.c
+-index 11dbe3f7..a3af825f 100644
+---- a/nasl/nasl_tree.c
+-+++ b/nasl/nasl_tree.c
+-@@ -25,7 +25,7 @@
+- #include "nasl_lex_ctxt.h"
+- #include "nasl_var.h"
+- 
+--#include <glib.h> /* for g_free */
+-+#include <glib-2.0/glib.h> /* for g_free */
+- #include <regex.h>
+- #include <stdlib.h> /* for abort */
+- #include <string.h> /* for memcpy */
+-diff --git a/nasl/nasl_var.c b/nasl/nasl_var.c
+-index c48aed89..9627267f 100644
+---- a/nasl/nasl_var.c
+-+++ b/nasl/nasl_var.c
+-@@ -25,7 +25,7 @@
+- #include "nasl_lex_ctxt.h"
+- #include "nasl_tree.h"
+- 
+--#include <glib.h>   /* for g_free */
+-+#include <glib-2.0/glib.h>   /* for g_free */
+- #include <stdlib.h> /* for abort */
+- #include <string.h> /* for strlen */
+- 
+-diff --git a/nasl/ntlmssp.c b/nasl/ntlmssp.c
+-index a540e147..11247fec 100644
+---- a/nasl/ntlmssp.c
+-+++ b/nasl/ntlmssp.c
+-@@ -25,7 +25,7 @@
+- 
+- #include "ntlmssp.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- #define NTLMSSP_NEGOTIATE_LM_KEY 0x00000080
+- 
+-diff --git a/nasl/smb_crypt.c b/nasl/smb_crypt.c
+-index 05c107d9..a334b6ba 100644
+---- a/nasl/smb_crypt.c
+-+++ b/nasl/smb_crypt.c
+-@@ -60,7 +60,7 @@
+- 
+- #include "proto.h"
+- 
+--#include <glib.h> /* for g_malloc0() */
+-+#include <glib-2.0/glib.h> /* for g_malloc0() */
+- #define int16 1
+- 
+- #ifndef FSTRING_LEN
+-diff --git a/src/attack.c b/src/attack.c
+-index 2c48f18f..b88eb265 100644
+---- a/src/attack.c
+-+++ b/src/attack.c
+-@@ -41,7 +41,7 @@
+- #include <arpa/inet.h> /* for inet_ntoa() */
+- #include <errno.h>     /* for errno() */
+- #include <fcntl.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/hosts.h>
+- #include <gvm/base/networking.h>
+- #include <gvm/base/prefs.h> /* for prefs_get() */
+-diff --git a/src/hosts.c b/src/hosts.c
+-index 0069930b..0bdd98d0 100644
+---- a/src/hosts.c
+-+++ b/src/hosts.c
+-@@ -29,7 +29,7 @@
+- #include "utils.h"           /* for data_left() */
+- 
+- #include <errno.h>               /* for errno() */
+--#include <glib.h>                /* for g_free() */
+-+#include <glib-2.0/glib.h>                /* for g_free() */
+- #include <gvm/base/networking.h> /* for gvm_resolve_list */
+- #include <stdio.h>               /* for snprintf() */
+- #include <string.h>              /* for strlen() */
+-diff --git a/src/nasl_plugins.c b/src/nasl_plugins.c
+-index 5afed203..44fc2ba6 100644
+---- a/src/nasl_plugins.c
+-+++ b/src/nasl_plugins.c
+-@@ -32,7 +32,7 @@
+- #include "processes.h"
+- 
+- #include <errno.h> /* for errno */
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/drop_privileges.h> /* for drop_privileges */
+- #include <gvm/base/networking.h>
+- #include <gvm/base/prefs.h> /* for prefs_get_bool */
+-diff --git a/src/openvas.c b/src/openvas.c
+-index 1890fe08..65ab4996 100644
+---- a/src/openvas.c
+-+++ b/src/openvas.c
+-@@ -44,7 +44,7 @@
+- #include <errno.h>  /* for errno() */
+- #include <fcntl.h>  /* for open() */
+- #include <gcrypt.h> /* for gcry_control */
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gnutls/gnutls.h> /* for gnutls_global_set_log_*  */
+- #include <grp.h>
+- #include <gvm/base/logging.h> /* for setup_log_handler, load_log_configuration, free_log_configuration*/
+-diff --git a/src/pluginload.c b/src/pluginload.c
+-index 70689379..beb833a4 100644
+---- a/src/pluginload.c
+-+++ b/src/pluginload.c
+-@@ -31,7 +31,7 @@
+- #include "utils.h"
+- 
+- #include <errno.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/prefs.h> /* for prefs_get() */
+- #include <gvm/base/proctitle.h>
+- #include <gvm/util/nvticache.h> /* for nvticache_new */
+-diff --git a/src/pluginscheduler.c b/src/pluginscheduler.c
+-index 6ce573b1..2683f13e 100644
+---- a/src/pluginscheduler.c
+-+++ b/src/pluginscheduler.c
+-@@ -30,7 +30,7 @@
+- #include "pluginlaunch.h"
+- #include "pluginload.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/prefs.h>     /* for prefs_get() */
+- #include <gvm/util/nvticache.h> /* for nvticache_t */
+- #include <malloc.h>
+-diff --git a/src/pluginscheduler.h b/src/pluginscheduler.h
+-index 8ded9988..e539ce81 100644
+---- a/src/pluginscheduler.h
+-+++ b/src/pluginscheduler.h
+-@@ -26,7 +26,7 @@
+- #ifndef PLUGINSCHEDULER_H
+- #define PLUGINSCHEDULER_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- struct plugins_scheduler;
+- 
+-diff --git a/src/processes.c b/src/processes.c
+-index ba65a13c..9f43c7ed 100644
+---- a/src/processes.c
+-+++ b/src/processes.c
+-@@ -28,7 +28,7 @@
+- #include "sighand.h"
+- 
+- #include <errno.h>            /* for errno() */
+--#include <glib.h>             /* for g_error */
+-+#include <glib-2.0/glib.h>             /* for g_error */
+- #include <gvm/base/logging.h> /* for gvm_log_lock/unlock() */
+- #include <setjmp.h>
+- #include <signal.h>   /* for kill() */
+-diff --git a/src/sighand.c b/src/sighand.c
+-index 72b2e056..675b4926 100644
+---- a/src/sighand.c
+-+++ b/src/sighand.c
+-@@ -25,7 +25,7 @@
+- #ifdef HAVE_EXECINFO_H
+- #include <execinfo.h> /* for backtrace() */
+- #endif
+--#include <glib.h>     /* for G_LOG_DOMAIN, for g_critical() */
+-+#include <glib-2.0/glib.h>     /* for G_LOG_DOMAIN, for g_critical() */
+- #include <signal.h>   /* for kill() */
+- #include <sys/wait.h> /* for waitpid() */
+- #include <unistd.h>   /* for getpid() */
+diff -ruN aports2/community/openvas/greenbone-nvt-sync.cron aports/community/openvas/greenbone-nvt-sync.cron
+--- aports2/community/openvas/greenbone-nvt-sync.cron	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas/greenbone-nvt-sync.cron	1970-01-01 08:00:00.000000000 +0800
+@@ -1,5 +0,0 @@
+-#!/bin/sh
+-/usr/bin/greenbone-nvt-sync >& /dev/null
+-/usr/bin/greenbone-scapdata-sync >& /dev/null
+-/usr/bin/greenbone-certdata-sync >& /dev/null
+-
+diff -ruN aports2/community/openvas/malloc-trim.patch aports/community/openvas/malloc-trim.patch
+--- aports2/community/openvas/malloc-trim.patch	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas/malloc-trim.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,24 +0,0 @@
+-diff --git a/src/pluginscheduler.c b/src/pluginscheduler.c
+-index 069b110..8e0f1f7 100644
+---- a/src/pluginscheduler.c
+-+++ b/src/pluginscheduler.c
+-@@ -305,7 +305,9 @@ plugins_scheduler_init (const char *plugins_list, int autoload,
+-       plugins_scheduler_free (ret);
+-       return NULL;
+-     }
+-+#ifdef __GLIBC__
+-   malloc_trim (0);
+-+#endif
+-   return ret;
+- }
+- 
+-@@ -407,7 +409,9 @@ scheduler_phase_cleanup (plugins_scheduler_t sched, int start, int end)
+-           element = element->next;
+-         }
+-     }
+-+#ifdef __GLIBC__
+-   malloc_trim (0);
+-+#endif
+- }
+- 
+- struct scheduler_plugin *
+diff -ruN aports2/community/openvas/openvas.post-install aports/community/openvas/openvas.post-install
+--- aports2/community/openvas/openvas.post-install	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas/openvas.post-install	1970-01-01 08:00:00.000000000 +0800
+@@ -1,4 +0,0 @@
+-#!/bin/sh
+-echo 'cfgfile="/etc/redis-openvas.conf"' >> /etc/conf.d/redis
+-echo 'db_address = /run/redis-openvas/redis.sock' > /etc/openvas/openvas.conf
+-exit 0
+diff -ruN aports2/community/openvas/openvas-sysctl.conf aports/community/openvas/openvas-sysctl.conf
+--- aports2/community/openvas/openvas-sysctl.conf	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas/openvas-sysctl.conf	1970-01-01 08:00:00.000000000 +0800
+@@ -1,2 +0,0 @@
+-net.core.somaxconn=1024
+-vm.overcommit_memory=1
+diff -ruN aports2/community/openvas/tcp_mss_include.patch aports/community/openvas/tcp_mss_include.patch
+--- aports2/community/openvas/tcp_mss_include.patch	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas/tcp_mss_include.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,24 +0,0 @@
+-diff --git a/nasl/nasl_packet_forgery_v6.c b/nasl/nasl_packet_forgery_v6.c
+-index a93302c..c255b0f 100644
+---- a/nasl/nasl_packet_forgery_v6.c
+-+++ b/nasl/nasl_packet_forgery_v6.c
+-@@ -75,6 +75,7 @@
+- #define UNFIX(n) ntohs (n)
+- #endif
+- 
+-+#define TCP_MSS_DESIRED		1220U   /* IPv6 (tunneled), EDNS0 (RFC3226) */
+- /*--------------[ cksum ]-----------------------------------------*/
+- 
+- /*
+-diff --git a/nasl/nasl_packet_forgery.c b/nasl/nasl_packet_forgery.c
+-index 7d185df..c0a5ffb 100644
+---- a/nasl/nasl_packet_forgery.c
+-+++ b/nasl/nasl_packet_forgery.c
+-@@ -52,6 +52,7 @@
+- #define UNFIX(n) ntohs (n)
+- #endif
+- 
+-+#define TCP_MSS_DEFAULT		 536U	/* IPv4 (RFC1122, RFC2581) */
+- /*--------------[ cksum ]-----------------------------------------*/
+- 
+- /*

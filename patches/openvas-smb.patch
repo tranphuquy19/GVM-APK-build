@@ -1,30 +1,461 @@
+diff -ruN aports2/community/openvas-smb/001-cmakelist-fortify.patch aports/community/openvas-smb/001-cmakelist-fortify.patch
+--- aports2/community/openvas-smb/001-cmakelist-fortify.patch	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas-smb/001-cmakelist-fortify.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,13 +0,0 @@
+-diff --git a/CMakeLists.txt b/CMakeLists.txt
+-index 021b08f..cf21e05 100644
+---- a/CMakeLists.txt
+-+++ b/CMakeLists.txt
+-@@ -150,7 +150,7 @@ pkg_check_modules (POPT REQUIRED popt)
+- if(${GSSAPI_VERSION} VERSION_LESS "7.5.0")
+- 	add_definitions(-DOLD_HEIMDAL)
+- endif()
+--set (CMAKE_C_FLAGS "-fPIC -O2 -D_FORTIFY_SOURCE=2 -fstack-protector ${CMAKE_C_FLAGS}")
+-+set (CMAKE_C_FLAGS "-fPIC -O2 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fstack-protector ${CMAKE_C_FLAGS}")
+- set (CMAKE_C_FLAGS "-Wno-unused-result -fno-strict-aliasing ${CMAKE_C_FLAGS}")
+- set (LINKER_HARDENING_FLAGS     "-Wl,-z,relro -Wl,-z,now")
+- 
 diff -ruN aports2/community/openvas-smb/APKBUILD aports/community/openvas-smb/APKBUILD
---- aports2/community/openvas-smb/APKBUILD	2021-07-01 15:24:36.517889707 +0200
-+++ aports/community/openvas-smb/APKBUILD	2021-06-28 21:19:04.076047047 +0200
-@@ -2,10 +2,10 @@
- # Maintainer: Francesco Colista <fcolista@alpinelinux.org>
- pkgname=openvas-smb
- pkgver=21.4.0
--pkgrel=10
-+pkgrel=0
- pkgdesc="SMB module for OpenVAS Scanner"
- url="https://github.com/greenbone/openvas-smb"
+--- aports2/community/openvas-smb/APKBUILD	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas-smb/APKBUILD	1970-01-01 08:00:00.000000000 +0800
+@@ -1,48 +0,0 @@
+-# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+-# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+-pkgname=openvas-smb
+-pkgver=21.4.0
+-pkgrel=11
+-pkgdesc="SMB module for OpenVAS Scanner"
+-url="https://github.com/greenbone/openvas-smb"
 -arch="x86 x86_64"
-+#arch="x86 x86_64"
- license="GPL-2.0"
- options="!check" #no check available
- makedepends="cmake mingw-w64-gcc mingw-w64-binutils mingw-w64-headers mingw-w64-crt
-@@ -35,11 +35,9 @@
- 	make DESTDIR="$pkgdir" install
- }
- 
+-license="GPL-2.0"
+-options="!check" #no check available
+-depends="gcompat"
+-makedepends="cmake mingw-w64-gcc mingw-w64-binutils mingw-w64-headers mingw-w64-crt
+-gvm-libs-dev gnutls-dev popt-dev perl-dev glib-dev
+-glib-dev xmltoman doxygen graphviz heimdal-dev 
+-sqlite-dev libunistring-dev gcompat"
+-subpackages="$pkgname-dbg $pkgname-dev $pkgname-doc"
+-source="$pkgname-$pkgver.tar.gz::https://github.com/greenbone/openvas-smb/archive/v$pkgver.tar.gz
+-	mingw-alpine-support.patch
+-	fix-missing-includes-path.patch
+-	comparison_fn_t.patch
+-	disable-backtrace.patch
+-	001-cmakelist-fortify.patch
+-	glib_full.patch"
+-
+-build() {
+-	cmake \
+-		-DCMAKE_BUILD_TYPE=None \
+-		-DCMAKE_INSTALL_PREFIX=/usr \
+-		-DCMAKE_VERBOSE_MAKEFILE=ON .
+-	# generate winexesvc_exe.c early to work around parallel build issue
+-	make -C winexe bin2c
+-	make -j1 -C winexe winexesvc_exe.c.o
+-	make
+-}
+-
+-package() {
+-	make DESTDIR="$pkgdir" install
+-}
+-
 -sha512sums="
 -6689cef95d128ea4444d3b3f6fb0d1201d55ae494ff758051b792e58c90ad7497502430b843ceba6d92aa06fbdf830a4c17a24042c1c3ce9affbcd8f587d0b0a  openvas-smb-21.4.0.tar.gz
-+sha512sums="6689cef95d128ea4444d3b3f6fb0d1201d55ae494ff758051b792e58c90ad7497502430b843ceba6d92aa06fbdf830a4c17a24042c1c3ce9affbcd8f587d0b0a  openvas-smb-21.4.0.tar.gz
- bd139b2317feb5fe3ea3ab4b62664ae70547b2859c372e30cd7062dbaef535a5ea665d33253d85a28553ab13ab0b943f609e86f7fcb9572c403d5b7612052701  mingw-alpine-support.patch
- 494ec5c871959b9493fbbec7060778d2bb2be689f2434f4b0489b24e9800ea0b3a91015537deae60ffd071ad8740913ee1598f04e1a416516f45658bd9d4315f  fix-missing-includes-path.patch
- 96b81bb378d0a70b1d31c19c646a95b96056ca3f85c02edc221bc17093b5403ba1fcdf9f3175e455aa32b7399e58a1c9cda525985c09c8b7dee8068bf3643a14  comparison_fn_t.patch
- 6a5f67177ca74ce051d190a81727b94938addf538c52831b5af3394f4d8d2ea990bcd58e3dc92570c7c4b0719deea49e2aa2fa549297c6e36ec4f8fa3f0a5270  disable-backtrace.patch
+-bd139b2317feb5fe3ea3ab4b62664ae70547b2859c372e30cd7062dbaef535a5ea665d33253d85a28553ab13ab0b943f609e86f7fcb9572c403d5b7612052701  mingw-alpine-support.patch
+-494ec5c871959b9493fbbec7060778d2bb2be689f2434f4b0489b24e9800ea0b3a91015537deae60ffd071ad8740913ee1598f04e1a416516f45658bd9d4315f  fix-missing-includes-path.patch
+-96b81bb378d0a70b1d31c19c646a95b96056ca3f85c02edc221bc17093b5403ba1fcdf9f3175e455aa32b7399e58a1c9cda525985c09c8b7dee8068bf3643a14  comparison_fn_t.patch
+-6a5f67177ca74ce051d190a81727b94938addf538c52831b5af3394f4d8d2ea990bcd58e3dc92570c7c4b0719deea49e2aa2fa549297c6e36ec4f8fa3f0a5270  disable-backtrace.patch
 -56c150d8fcc46720d71a632e7f6ff7a1ad92d90c84361eb8ad81c4b4811ac9ff56f06654f70840895ac7bec4f852bafeff0599e29a4c5572d826403df1d2ca68  001-cmakelist-fortify.patch
+-d74f519ec19690f8056eff4b1949b43c7e360b0d95838990faa9c7c08638b91afbf44249f730c2f07c07ad6251b0587f538411c302ad2482e74435ee41f2a3a6  glib_full.patch
 -"
-+56c150d8fcc46720d71a632e7f6ff7a1ad92d90c84361eb8ad81c4b4811ac9ff56f06654f70840895ac7bec4f852bafeff0599e29a4c5572d826403df1d2ca68  001-cmakelist-fortify.patch"
+diff -ruN aports2/community/openvas-smb/comparison_fn_t.patch aports/community/openvas-smb/comparison_fn_t.patch
+--- aports2/community/openvas-smb/comparison_fn_t.patch	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas-smb/comparison_fn_t.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,38 +0,0 @@
+-diff --git a/samba/librpc/ndr/libndr_proto.h b/samba/librpc/ndr/libndr_proto.h
+-index f60d93d..b97df1d 100644
+---- a/samba/librpc/ndr/libndr_proto.h
+-+++ b/samba/librpc/ndr/libndr_proto.h
+-@@ -9,6 +9,7 @@
+- #define _PUBLIC_
+- #endif
+- 
+-+typedef int (*comparison_fn_t)(const void *, const void *);
+- 
+- /* The following definitions come from librpc/ndr/ndr.c  */
+- 
+-diff --git a/samba/lib/ldb/common/ldb_msg.c b/samba/lib/ldb/common/ldb_msg.c
+-index 0f7a214..7ff1583 100644
+---- a/samba/lib/ldb/common/ldb_msg.c
+-+++ b/samba/lib/ldb/common/ldb_msg.c
+-@@ -35,6 +35,8 @@
+- #include "includes.h"
+- #include "ldb/include/includes.h"
+- 
+-+typedef int (*comparison_fn_t)(const void *, const void *);
+-+
+- /*
+-   create a new ldb_message in a given memory context (NULL for top level)
+- */
+-diff --git a/samba/lib/ldb/include/includes.h b/samba/lib/ldb/include/includes.h
+-index ce0d40e..c07f117 100644
+---- a/samba/lib/ldb/include/includes.h
+-+++ b/samba/lib/ldb/include/includes.h
+-@@ -16,7 +16,7 @@
+- #define dyn_MODULESDIR dyn_LIBDIR
+- #endif
+- 
+--
+-+typedef int (*comparison_fn_t)(const void *, const void *);
+- 
+- #define discard_const(ptr) ((void *)((intptr_t)(ptr)))
+- #define discard_const_p(type, ptr) ((type *)discard_const(ptr))
+diff -ruN aports2/community/openvas-smb/disable-backtrace.patch aports/community/openvas-smb/disable-backtrace.patch
+--- aports2/community/openvas-smb/disable-backtrace.patch	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas-smb/disable-backtrace.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,135 +0,0 @@
+-diff --git a/samba/include/config.h b/samba/include/config.h
+-index b99c4d5..dd85ee4 100644
+---- a/samba/include/config.h
+-+++ b/samba/include/config.h
+-@@ -38,7 +38,7 @@
+- /* #define HAVE_ATTR_XATTR_H 1 */
+- 
+- /* Define to 1 if you have the `backtrace' function. */
+--#define HAVE_BACKTRACE 1
+-+#define HAVE_BACKTRACE 0
+- 
+- /* Define to 1 if you have the <blkid/blkid.h> header file. */
+- /* #undef HAVE_BLKID_BLKID_H */
+-diff --git a/samba/include/config_tmp.h b/samba/include/config_tmp.h
+-index e85cb77..9c7e93c 100644
+---- a/samba/include/config_tmp.h
+-+++ b/samba/include/config_tmp.h
+-@@ -38,7 +38,7 @@
+- #define HAVE_ATTR_XATTR_H 1
+- 
+- /* Define to 1 if you have the `backtrace' function. */
+--#define HAVE_BACKTRACE 1
+-+#define HAVE_BACKTRACE 0
+- 
+- /* Define to 1 if you have the <blkid/blkid.h> header file. */
+- /* #undef HAVE_BLKID_BLKID_H */
+-diff --git a/samba/lib/util/fault.c b/samba/lib/util/fault.c
+-index c7d6b7e..a9cdabb 100644
+---- a/samba/lib/util/fault.c
+-+++ b/samba/lib/util/fault.c
+-@@ -36,83 +36,6 @@ static struct {
+- 
+- static const char *progname;
+- 
+--#ifdef HAVE_BACKTRACE
+--#include <execinfo.h>
+--#elif HAVE_LIBEXC_H
+--#include <libexc.h>
+--#endif
+--
+--/**
+-- * Write backtrace to debug log
+-- */
+--_PUBLIC_ void call_backtrace(void)
+--{
+--#ifdef HAVE_BACKTRACE
+--#ifndef BACKTRACE_STACK_SIZE
+--#define BACKTRACE_STACK_SIZE 64
+--#endif
+--	void *backtrace_stack[BACKTRACE_STACK_SIZE];
+--	size_t backtrace_size;
+--	char **backtrace_strings;
+--
+--	/* get the backtrace (stack frames) */
+--	backtrace_size = backtrace(backtrace_stack,BACKTRACE_STACK_SIZE);
+--	backtrace_strings = backtrace_symbols(backtrace_stack, backtrace_size);
+--
+--	DEBUG(0, ("BACKTRACE: %lu stack frames:\n", 
+--		  (unsigned long)backtrace_size));
+--	
+--	if (backtrace_strings) {
+--		int i;
+--
+--		for (i = 0; i < backtrace_size; i++)
+--			DEBUGADD(0, (" #%u %s\n", i, backtrace_strings[i]));
+--
+--		/* Leak the backtrace_strings, rather than risk what free() might do */
+--	}
+--
+--#elif HAVE_LIBEXC
+--
+--#define NAMESIZE 32 /* Arbitrary */
+--#ifndef BACKTRACE_STACK_SIZE
+--#define BACKTRACE_STACK_SIZE 64
+--#endif
+--
+--	/* The IRIX libexc library provides an API for unwinding the stack. See
+--	 * libexc(3) for details. Apparantly trace_back_stack leaks memory, but
+--	 * since we are about to abort anyway, it hardly matters.
+--	 *
+--	 * Note that if we paniced due to a SIGSEGV or SIGBUS (or similar) this
+--	 * will fail with a nasty message upon failing to open the /proc entry.
+--	 */
+--	{
+--		uint64_t	addrs[BACKTRACE_STACK_SIZE];
+--		char *      	names[BACKTRACE_STACK_SIZE];
+--		char		namebuf[BACKTRACE_STACK_SIZE * NAMESIZE];
+--
+--		int		i;
+--		int		levels;
+--
+--		ZERO_ARRAY(addrs);
+--		ZERO_ARRAY(names);
+--		ZERO_ARRAY(namebuf);
+--
+--		for (i = 0; i < BACKTRACE_STACK_SIZE; i++) {
+--			names[i] = namebuf + (i * NAMESIZE);
+--		}
+--
+--		levels = trace_back_stack(0, addrs, names,
+--				BACKTRACE_STACK_SIZE, NAMESIZE);
+--
+--		DEBUG(0, ("BACKTRACE: %d stack frames:\n", levels));
+--		for (i = 0; i < levels; i++) {
+--			DEBUGADD(0, (" #%d 0x%llx %s\n", i, addrs[i], names[i]));
+--		}
+--     }
+--#undef NAMESIZE
+--#endif
+--}
+--
+- _PUBLIC_ const char *panic_action = NULL;
+- 
+- /**
+-@@ -143,8 +66,6 @@ _PUBLIC_ void smb_panic(const char *why)
+- 	}
+- 	DEBUG(0,("PANIC: %s\n", why));
+- 
+--	call_backtrace();
+--
+- #ifdef SIGABRT
+- 	CatchSignal(SIGABRT,SIGNAL_CAST SIG_DFL);
+- #endif
+-diff --git a/samba/lib/util/util_proto.h b/samba/lib/util/util_proto.h
+-index efc787f..bb48f46 100644
+---- a/samba/lib/util/util_proto.h
+-+++ b/samba/lib/util/util_proto.h
+-@@ -44,7 +44,6 @@ _PUBLIC_ void register_debug_handlers(const char *name, struct debug_ops *ops);
+- 
+- /* The following definitions come from lib/util/fault.c  */
+- 
+--_PUBLIC_ void call_backtrace(void);
+- _PUBLIC_ void smb_panic(const char *why);
+- _PUBLIC_ void fault_setup(const char *pname);
+- _PUBLIC_ BOOL register_fault_handler(const char *name, void (*fault_handler)(int sig));
+diff -ruN aports2/community/openvas-smb/fix-missing-includes-path.patch aports/community/openvas-smb/fix-missing-includes-path.patch
+--- aports2/community/openvas-smb/fix-missing-includes-path.patch	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas-smb/fix-missing-includes-path.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,160 +0,0 @@
+-diff --git a/samba/auth/auth_util.c b/samba/auth/auth_util.c
+-index b1e1672..7068cdf 100644
+---- a/samba/auth/auth_util.c
+-+++ b/samba/auth/auth_util.c
+-@@ -23,7 +23,7 @@
+- */
+- 
+- #include "includes.h"
+--#include <heimdal/gssapi/gssapi.h>
+-+#include <gssapi/gssapi.h>
+- #include "auth/auth.h"
+- #include "libcli/security/security.h"
+- #include "libcli/auth/libcli_auth.h"
+-diff --git a/samba/auth/credentials/credentials_krb5.h b/samba/auth/credentials/credentials_krb5.h
+-index a7a05d2..4a23954 100644
+---- a/samba/auth/credentials/credentials_krb5.h
+-+++ b/samba/auth/credentials/credentials_krb5.h
+-@@ -21,7 +21,7 @@
+-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+- */
+- 
+--#include <heimdal/gssapi/gssapi.h>
+-+#include <gssapi/gssapi.h>
+- 
+- struct ccache_container;
+- 
+-diff --git a/samba/lib/replace/system/kerberos.h b/samba/lib/replace/system/kerberos.h
+-index 496eec9..88d1d99 100644
+---- a/samba/lib/replace/system/kerberos.h
+-+++ b/samba/lib/replace/system/kerberos.h
+-@@ -125,7 +125,7 @@
+- /* Whether krb5_princ_realm returns krb5_realm or krb5_data */
+- #define KRB5_PRINC_REALM_RETURNS_REALM 1
+- 
+--#include <heimdal/krb5.h>
+-+#include <krb5.h>
+- #include <com_err.h>
+- #endif
+- 
+-diff --git a/samba/auth/kerberos/krb5_init_context.h b/samba/auth/kerberos/krb5_init_context.h
+-index 4b7cc3a..d318149 100644
+---- a/samba/auth/kerberos/krb5_init_context.h
+-+++ b/samba/auth/kerberos/krb5_init_context.h
+-@@ -17,7 +17,7 @@
+-    along with this program; if not, write to the Free Software
+-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+- */
+--#include <heimdal/krb5.h>
+-+#include <krb5.h>
+- 
+- struct smb_krb5_context {
+- 	struct krb5_context_data *krb5_context;
+-
+-diff --git a/samba/include/config.h b/samba/include/config.h
+-index a555fbb..b99c4d5 100644
+---- a/samba/include/config.h
+-+++ b/samba/include/config.h
+-@@ -454,7 +454,7 @@
+- /* #undef HAVE_NSS_COMMON_H */
+- 
+- /* Define to 1 if you have the <nss.h> header file. */
+--#define HAVE_NSS_H 1
+-+#define HAVE_NSS_H 0
+- 
+- /* Define to 1 if you have the <ns_api.h> header file. */
+- /* #undef HAVE_NS_API_H */
+-diff --git a/samba/auth/gensec/gensec_gssapi.c b/samba/auth/gensec/gensec_gssapi.c
+-index 5f92e78..daecb7a 100644
+---- a/samba/auth/gensec/gensec_gssapi.c
+-+++ b/samba/auth/gensec/gensec_gssapi.c
+-@@ -23,7 +23,7 @@
+- */
+- 
+- #include "includes.h"
+--#include <heimdal/gssapi/gssapi_krb5.h>
+-+#include <gssapi/gssapi_krb5.h>
+- #include "system/kerberos.h"
+- #include <heimdal/gssapi/gssapi.h>
+- #include "auth/kerberos/kerberos.h"
+-diff --git a/samba/auth/gensec/gensec_gssapi.c b/samba/auth/gensec/gensec_gssapi.c
+-index daecb7a..0139f8d 100644
+---- a/samba/auth/gensec/gensec_gssapi.c
+-+++ b/samba/auth/gensec/gensec_gssapi.c
+-@@ -25,7 +25,7 @@
+- #include "includes.h"
+- #include <gssapi/gssapi_krb5.h>
+- #include "system/kerberos.h"
+--#include <heimdal/gssapi/gssapi.h>
+-+#include <gssapi/gssapi.h>
+- #include "auth/kerberos/kerberos.h"
+- #include "librpc/gen_ndr/krb5pac.h"
+- #include "auth/auth.h"
+-diff --git a/samba/auth/kerberos/kerberos.c b/samba/auth/kerberos/kerberos.c
+-index 1f190c1..37a9773 100644
+---- a/samba/auth/kerberos/kerberos.c
+-+++ b/samba/auth/kerberos/kerberos.c
+-@@ -24,7 +24,7 @@
+- 
+- #include "includes.h"
+- #include "system/kerberos.h"
+--#include <heimdal/roken.h>
+-+#include <roken.h>
+- 
+- #ifdef HAVE_KRB5
+- 
+-diff --git a/samba/auth/kerberos/krb5_init_context.c b/samba/auth/kerberos/krb5_init_context.c
+-index f7230e4..20d65c6 100644
+---- a/samba/auth/kerberos/krb5_init_context.c
+-+++ b/samba/auth/kerberos/krb5_init_context.c
+-@@ -27,9 +27,9 @@
+- #include "lib/socket/socket.h"
+- #include "system/network.h"
+- #include "lib/events/events.h"
+--#include <heimdal/roken.h>
+-+#include <roken.h>
+- 
+--#include <heimdal/krb5.h>
+-+#include <krb5.h>
+- 
+- /*
+-   context structure for operations on cldap packets
+-diff --git a/samba/dsdb/samdb/ldb_modules/password_hash.c b/samba/dsdb/samdb/ldb_modules/password_hash.c
+-index 26101b9..3467d8e 100644
+---- a/samba/dsdb/samdb/ldb_modules/password_hash.c
+-+++ b/samba/dsdb/samdb/ldb_modules/password_hash.c
+-@@ -43,7 +43,7 @@
+- #include "system/time.h"
+- #include "dsdb/samdb/samdb.h"
+- #include "dsdb/common/flags.h"
+--#include <heimdal/hdb.h>
+-+#include <hdb.h>
+- #include "dsdb/samdb/ldb_modules/password_modules.h"
+- 
+- /* If we have decided there is reason to work on this request, then
+-diff --git a/winexe/winexe.c b/winexe/winexe.c
+-index 25eecb2..075442b 100644
+---- a/winexe/winexe.c
+-+++ b/winexe/winexe.c
+-@@ -6,7 +6,7 @@
+- #include "includes.h"
+- 
+- #include <sys/fcntl.h>
+--#include <sys/unistd.h>
+-+#include <unistd.h>
+- #include <sys/termios.h>
+- #include <signal.h>
+- #include <stdint.h>
+-diff --git a/winexe/wincmd.c b/winexe/wincmd.c
+-index df61593..0bdf9ff 100644
+---- a/winexe/wincmd.c
+-+++ b/winexe/wincmd.c
+-@@ -47,7 +47,7 @@
+- #include <glib.h> /* for g_malloc0 */
+- 
+- #include <sys/fcntl.h>
+--#include <sys/unistd.h>
+-+#include <unistd.h>
+- #include <sys/termios.h>
+- #include <signal.h>
+- 
+diff -ruN aports2/community/openvas-smb/glib_full.patch aports/community/openvas-smb/glib_full.patch
+--- aports2/community/openvas-smb/glib_full.patch	2022-05-06 23:57:56.631338874 +0700
++++ aports/community/openvas-smb/glib_full.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,26 +0,0 @@
+-diff --git a/samba/pidl/lib/Parse/Pidl/Wireshark/NDR.pm b/samba/pidl/lib/Parse/Pidl/Wireshark/NDR.pm
+-index 14b9223..e684b91 100644
+---- a/samba/pidl/lib/Parse/Pidl/Wireshark/NDR.pm
+-+++ b/samba/pidl/lib/Parse/Pidl/Wireshark/NDR.pm
+-@@ -894,7 +894,7 @@ sub Parse($$$$)
+- 	$res{headers} .= "#ifdef HAVE_CONFIG_H\n";
+- 	$res{headers} .= "#include \"config.h\"\n";
+- 	$res{headers} .= "#endif\n\n";
+--	$res{headers} .= "#include <glib.h>\n";
+-+	$res{headers} .= "#include <glib-2.0/glib.h>\n";
+- 	$res{headers} .= "#include <string.h>\n";
+- 	$res{headers} .= "#include <epan/packet.h>\n\n";
+- 
+-diff --git a/winexe/wincmd.c b/winexe/wincmd.c
+-index 0bdf9ff..257e00f 100644
+---- a/winexe/wincmd.c
+-+++ b/winexe/wincmd.c
+-@@ -44,7 +44,7 @@
+- #include "winexe.h"
+- #include "winexesvc/shared.h"
+- 
+--#include <glib.h> /* for g_malloc0 */
+-+#include <glib-2.0/glib.h> /* for g_malloc0 */
+- 
+- #include <sys/fcntl.h>
+- #include <unistd.h>
+diff -ruN aports2/community/openvas-smb/mingw-alpine-support.patch aports/community/openvas-smb/mingw-alpine-support.patch
+--- aports2/community/openvas-smb/mingw-alpine-support.patch	2022-05-06 23:57:56.635338910 +0700
++++ aports/community/openvas-smb/mingw-alpine-support.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,13 +0,0 @@
+-diff --git a/winexe/CMakeLists.txt b/winexe/CMakeLists.txt
+-index a0e8bb5..2cb6040 100644
+---- a/winexe/CMakeLists.txt
+-+++ b/winexe/CMakeLists.txt
+-@@ -54,7 +54,7 @@ include_directories(${SMB_INCLUDES})
+- include_directories(${POPT_INCLUDE_DIRS})
+- include_directories(${GLIB_INCLUDE_DIRS})
+- 
+--find_program(MINGW_GCC NAMES i686-w64-mingw32-gcc i586-mingw32msvc-gcc)
+-+find_program(MINGW_GCC NAMES i686-w64-mingw32-gcc i586-mingw32msvc-gcc x86_64-w64-mingw32-gcc x86-w64-mingw32-gcc)
+- 
+- if (NOT MINGW_GCC)
+-   message(SEND_ERROR "i586-mingw32msvc-gcc not found in PATH.\nIt is needed to build the Windows Service for winexe.")

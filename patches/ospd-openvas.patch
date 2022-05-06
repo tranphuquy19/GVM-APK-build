@@ -1,12 +1,91 @@
 diff -ruN aports2/community/ospd-openvas/APKBUILD aports/community/ospd-openvas/APKBUILD
---- aports2/community/ospd-openvas/APKBUILD	2021-07-01 15:30:22.700641030 +0200
-+++ aports/community/ospd-openvas/APKBUILD	2021-07-05 16:45:36.110073773 +0200
-@@ -3,7 +3,7 @@
- # Maintainer: Francesco Colista <fcolista@alpinelinux.org>
- pkgname=ospd-openvas
- pkgver=21.4.1
+--- aports2/community/ospd-openvas/APKBUILD	2022-05-06 23:57:56.635338910 +0700
++++ aports/community/ospd-openvas/APKBUILD	1970-01-01 08:00:00.000000000 +0800
+@@ -1,40 +0,0 @@
+-# Contributor: Leonardo Arena <rnalrd@alpinelinux.org>
+-# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+-# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+-pkgname=ospd-openvas
+-pkgver=21.4.4
 -pkgrel=10
-+pkgrel=0
- pkgdesc="ospd-openvas is an OSP server implementation to allow GVM to remotely control an OpenVAS Scanner"
- url="https://github.com/greenbone/ospd-openvas"
- arch="noarch"
+-pkgdesc="ospd-openvas is an OSP server implementation to allow GVM to remotely control an OpenVAS Scanner"
+-url="https://github.com/greenbone/ospd-openvas"
+-arch="noarch"
+-license="AGPL-3.0-or-later"
+-pkgusers="gvm"
+-pkggroups="gvm"
+-depends="py3-psutil py3-redis py3-packaging py3-deprecated ospd"
+-makedepends="py3-setuptools"
+-subpackages="$pkgname-openrc"
+-install="$pkgname.post-install"
+-source="$pkgname-$pkgver.tar.gz::https://github.com/greenbone/ospd-openvas/archive/v$pkgver.tar.gz
+-	$pkgname.initd
+-	ospd.conf"
+-
+-build() {
+-	python3 setup.py build
+-}
+-
+-check() {
+-	python3 setup.py check
+-}
+-
+-package() {
+-	python3 setup.py install --root="$pkgdir" --optimize=1
+-	install -d -o $pkgusers -g $pkggroups "$pkgdir"/run/ospd
+-	install -Dm755 "$srcdir"/$pkgname.initd "$pkgdir"/etc/init.d/$pkgname
+-	install -Dm644 "$srcdir"/ospd.conf "$pkgdir"/etc/openvas/ospd.conf
+-}
+-
+-sha512sums="
+-3981b0a9044f90243fe06f15b0d8ee5a6b1a334556f6de76955aecda0404da2f8bd1d39bf547093a31c244f0aabae819f5e45e8c518984fc7d50764a267086e9  ospd-openvas-21.4.4.tar.gz
+-7567dd8541fb84b8a8ef82c51c8a1e9d29f9a78483525f55f59cb29a57d42ca96499b7e3bf30e5fef0e02293ecb1455a7a748e3093b1892b2be80632f75e7e32  ospd-openvas.initd
+-c3714d1555dac2b557e8faa1dba7bd3d4b27930b0a18ec644f3bd4ef4e02d598eaca012651b105899d2ca192196cbbdb2eeef1d70a514222bbe2698c1874ae19  ospd.conf
+-"
+diff -ruN aports2/community/ospd-openvas/ospd.conf aports/community/ospd-openvas/ospd.conf
+--- aports2/community/ospd-openvas/ospd.conf	2022-05-06 23:57:56.635338910 +0700
++++ aports/community/ospd-openvas/ospd.conf	1970-01-01 08:00:00.000000000 +0800
+@@ -1,10 +0,0 @@
+-[OSPD - openvas]
+-
+-#required by gvmd
+-unix_socket = /run/ospd/ospd.sock
+-
+-#socket_mode = 0o770
+-pid_file = /run/ospd/ospd-openvas.pid
+-
+-log_level = DEBUG
+-log_file = /var/log/gvm/openvas.log
+diff -ruN aports2/community/ospd-openvas/ospd-openvas.initd aports/community/ospd-openvas/ospd-openvas.initd
+--- aports2/community/ospd-openvas/ospd-openvas.initd	2022-05-06 23:57:56.635338910 +0700
++++ aports/community/ospd-openvas/ospd-openvas.initd	1970-01-01 08:00:00.000000000 +0800
+@@ -1,23 +0,0 @@
+-#!/sbin/openrc-run
+-
+-name="Remotely control an OpenVAS Scanner"
+-command="/usr/bin/ospd-openvas"
+-pidfile="/run/ospd/${RC_SVCNAME}.pid"
+-
+-: ${OSPD_OPENVAS_UNIX_SOCKET:=$(dirname $pidfile)/ospd.sock}
+-: ${OSPD_OPENVAS_SOCKET_MODE:=0o777}
+-
+-command_args="${OSPD_OPENVAS_OPTIONS} \
+-	--unix-socket=${OSPD_OPENVAS_UNIX_SOCKET} \
+-	--socket-mode=${OSPD_OPENVAS_SOCKET_MODE} \
+-	--pid-file ${pidfile} \
+-	--config /etc/openvas/ospd.conf"
+-
+-depend() {
+-	after firewall
+-	need redis
+-}
+-
+-start_pre() {
+-	checkpath --directory "${pidfile%/*}" /var/log/gvm
+-}
+diff -ruN aports2/community/ospd-openvas/ospd-openvas.post-install aports/community/ospd-openvas/ospd-openvas.post-install
+--- aports2/community/ospd-openvas/ospd-openvas.post-install	2022-05-06 23:57:56.635338910 +0700
++++ aports/community/ospd-openvas/ospd-openvas.post-install	1970-01-01 08:00:00.000000000 +0800
+@@ -1,2 +0,0 @@
+-#!/bin/sh
+-addgroup gvm redis 2>/dev/null

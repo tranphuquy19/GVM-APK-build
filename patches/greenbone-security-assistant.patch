@@ -1,72 +1,479 @@
 diff -ruN aports2/community/greenbone-security-assistant/APKBUILD aports/community/greenbone-security-assistant/APKBUILD
---- aports2/community/greenbone-security-assistant/APKBUILD	2021-07-01 15:30:35.104603431 +0200
-+++ aports/community/greenbone-security-assistant/APKBUILD	2021-07-05 16:45:36.106073865 +0200
-@@ -3,10 +3,10 @@
- pkgname=greenbone-security-assistant
- _pkgname=gsad
- pkgver=21.4.1
--pkgrel=10
-+pkgrel=0
- pkgdesc="Greenbone Security Assistant (gsa) - OpenVAS web frontend"
- url="https://www.openvas.org/"
--arch="all !mips !mips64"
-+arch="all !mips !mips64 !riscv64" # no nodejs on riscv64
- license="GPL-2.0-or-later"
- depends="wget"
- makedepends="cmake doxygen xmltoman graphviz gvm-libs-dev
-@@ -21,13 +21,12 @@
- 	gsad-sbin.patch
- 	musl-stack-size.patch
- 	remove-husky-git-hook.patch
+--- aports2/community/greenbone-security-assistant/APKBUILD	2022-05-06 23:57:56.619338765 +0700
++++ aports/community/greenbone-security-assistant/APKBUILD	1970-01-01 08:00:00.000000000 +0800
+@@ -1,66 +0,0 @@
+-# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+-# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+-pkgname=greenbone-security-assistant
+-_pkgname=gsad
+-pkgver=21.4.4
+-pkgrel=11
+-pkgdesc="Greenbone Security Assistant (gsa) - OpenVAS web frontend"
+-url="https://www.openvas.org/"
+-arch="all !mips !mips64 !riscv64" # no nodejs on riscv64
+-license="GPL-2.0-or-later"
+-depends="wget gcompat"
+-makedepends="cmake doxygen xmltoman graphviz gvm-libs-dev
+-	libxslt-dev libmicrohttpd-dev py3-polib libgcrypt-dev
+-	nodejs-current npm yarn clang-dev glib-dev gcompat"
+-checkdepends="cppcheck"
+-subpackages="$pkgname-doc $pkgname-openrc"
+-source="$pkgname-$pkgver.tar.gz::https://github.com/greenbone/gsa/archive/v$pkgver.tar.gz
+-	$_pkgname.initd
+-	$_pkgname.logrotate
+-	gsad-sbin.patch
+-	musl-stack-size.patch
+-	remove-husky-git-hook.patch
 -	timeout.patch
- 	"
- builddir="$srcdir/gsa-$pkgver"
- 
- case "$CARCH" in
+-	glib_full.patch
+-	"
+-builddir="$srcdir/gsa-$pkgver"
+-
+-case "$CARCH" in
 -# cppcheck not available
 -aarch64 | s390x) options="!check" ;;
-+	# cppcheck not available
-+	aarch64|s390x) options="!check";;
- esac
- 
- build() {
-@@ -61,6 +60,5 @@
- e2bfaa69a0723a778f40bc98bd7c561ee888f90a3da9a13b3da193381d5be796e644a0d4c09f85464c233fa2d1ff4a1663494acb4490f0e8e3a5f2728c4e8d81  gsa-pid.patch
- 3afa191863e1056182f8abf7f6d9a65cbd5d3fd69a522c5e414e19fcf2dd6d02eb8b5b2867383eaa659ce913f169c0739a4bc1209996879337b60ccd80d0bcfa  gsad-sbin.patch
- ad78cce9f4f21157d679e227698896364c33eac9c5af4228552b61c0f9bde0e3b2743ae6717766acde38d5445d08e60832b2b0418456cdb8a77a91b3c440735b  musl-stack-size.patch
--07ef8974f0411dd7c189fdb5d1244428e06b1c558c8a4969ddaa72ddcfe3fbbef870bdd2c39ce2991a1256c981655aa7f8d81e6238dbbfbc6a146050ab58e8ff  remove-husky-git-hook.patch
+-esac
+-
+-build() {
+-	cmake -B build \
+-		-DCMAKE_BUILD_TYPE=None \
+-		-DCMAKE_INSTALL_PREFIX=/usr \
+-		-DSYSCONFDIR=/etc \
+-		-DSBINDIR=/usr/sbin \
+-		-DLOCALSTATEDIR=/var \
+-		-DDEFAULT_CONFIG_DIR=/etc/default \
+-		-DLOGROTATE_DIR=/etc/logrotate.d
+-
+-	make -C build
+-}
+-
+-check() {
+-	make -C build check
+-}
+-
+-package() {
+-	make -C build DESTDIR="$pkgdir" install
+-	install -Dm644 "$srcdir"/$_pkgname.logrotate "$pkgdir"/etc/logrotate.d/$_pkgname
+-	install -Dm755 "$srcdir"/$_pkgname.initd "$pkgdir"/etc/init.d/$_pkgname
+-	rm -rf "$pkgdir"/usr/lib/systemd
+-}
+-
+-sha512sums="
+-5a7b45132a049adf608ccd8988d69a415290cc57d6e7537835a78e19aafb5dfdf204197576f69277726587efaccce189c1ccab55c43e5a0a7855c538b3bc4b67  greenbone-security-assistant-21.4.4.tar.gz
+-1f46b6b62f0f397ad6a6889442979a8a7a53368e6fa9fb6ecb3e56e5719df466d4c6b4452992c558189e272ec423202afafba96cc8ebda79e988953e66f2292f  gsad.initd
+-ab43f8c54cf72e2a800bdcf4daebeabfa18a7ef49f098d65e70f97ccab3d36606c353b82b8fd6b4f2cecd289d36f48f805a5c34cba86f8e8c61bf074b0afe695  gsad.logrotate
+-3afa191863e1056182f8abf7f6d9a65cbd5d3fd69a522c5e414e19fcf2dd6d02eb8b5b2867383eaa659ce913f169c0739a4bc1209996879337b60ccd80d0bcfa  gsad-sbin.patch
+-ad78cce9f4f21157d679e227698896364c33eac9c5af4228552b61c0f9bde0e3b2743ae6717766acde38d5445d08e60832b2b0418456cdb8a77a91b3c440735b  musl-stack-size.patch
+-e37be1d0c487a0647bf1fdc4b40f6220e92ef057d2196562075626a40c8e798a3b5a503f4cb46c04c45af7ffa9ddaefc40c996908048323ead5b15ddb5cea405  remove-husky-git-hook.patch
 -46b1ca8f1fad33dc5a43923197774f0044e0d12cec8bdda757c6e2b79c42e771932d8f6b73d45a9d182e3ab9f1fad03bf4f5dd3537e9985ebfc6af64a77dc082  timeout.patch
-+e37be1d0c487a0647bf1fdc4b40f6220e92ef057d2196562075626a40c8e798a3b5a503f4cb46c04c45af7ffa9ddaefc40c996908048323ead5b15ddb5cea405  remove-husky-git-hook.patch
- "
+-79711a9892dcd9f87548a5cfe2656067619efa41d504ddaa8f141f8bd3771e381af2e4511f20c86c12eee847caa6722d7962908b0a9082c4de6c17f60ce97985  glib_full.patch
+-"
+diff -ruN aports2/community/greenbone-security-assistant/glib_full.patch aports/community/greenbone-security-assistant/glib_full.patch
+--- aports2/community/greenbone-security-assistant/glib_full.patch	2022-05-06 23:57:56.619338765 +0700
++++ aports/community/greenbone-security-assistant/glib_full.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,273 +0,0 @@
+-diff --git a/gsad/src/gsad.c b/gsad/src/gsad.c
+-index 423b5b7f3..4f4eb9b73 100644
+---- a/gsad/src/gsad.c
+-+++ b/gsad/src/gsad.c
+-@@ -47,7 +47,7 @@
+- #include <assert.h>
+- #include <errno.h>
+- #include <gcrypt.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gnutls/gnutls.h>
+- #include <grp.h> /* for setgroups */
+- #include <netinet/in.h>
+-diff --git a/gsad/src/gsad_base.c b/gsad/src/gsad_base.c
+-index 76bdc8f9c..841e1a55c 100644
+---- a/gsad/src/gsad_base.c
+-+++ b/gsad/src/gsad_base.c
+-@@ -25,7 +25,7 @@
+- 
+- #include "gsad_params.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <libxml/parser.h> /* for xmlHasFeature() */
+- #include <string.h>        /* for strlen() */
+- #include <sys/param.h>
+-diff --git a/gsad/src/gsad_base.h b/gsad/src/gsad_base.h
+-index d01c46cb4..bbd9d5ccd 100644
+---- a/gsad/src/gsad_base.h
+-+++ b/gsad/src/gsad_base.h
+-@@ -27,7 +27,7 @@
+- #include "gsad_cmd.h"  /* for cmd_response_data_t */
+- #include "gsad_user.h" /* for credentials_t */
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <sys/time.h>
+- 
+- int
+-diff --git a/gsad/src/gsad_cmd.h b/gsad/src/gsad_cmd.h
+-index 68519f0b7..e9b39bce2 100644
+---- a/gsad/src/gsad_cmd.h
+-+++ b/gsad/src/gsad_cmd.h
+-@@ -26,7 +26,7 @@
+- 
+- #include "gsad_content_type.h" /* for content_type_t */
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- typedef struct cmd_response_data cmd_response_data_t;
+- 
+-diff --git a/gsad/src/gsad_credentials.c b/gsad/src/gsad_credentials.c
+-index c0cdb2bc3..5c44f4171 100644
+---- a/gsad/src/gsad_credentials.c
+-+++ b/gsad/src/gsad_credentials.c
+-@@ -25,7 +25,7 @@
+- 
+- #include "gsad_user.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /**
+-  *  @brief Structure of credential related information.
+-diff --git a/gsad/src/gsad_credentials.h b/gsad/src/gsad_credentials.h
+-index 0f60e025f..88c5c1e7a 100644
+---- a/gsad/src/gsad_credentials.h
+-+++ b/gsad/src/gsad_credentials.h
+-@@ -26,7 +26,7 @@
+- 
+- #include "gsad_user.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- typedef struct credentials credentials_t;
+- 
+-diff --git a/gsad/src/gsad_gmp.c b/gsad/src/gsad_gmp.c
+-index d95b42987..96b096e45 100644
+---- a/gsad/src/gsad_gmp.c
+-+++ b/gsad/src/gsad_gmp.c
+-@@ -41,7 +41,7 @@
+- #include <assert.h>
+- #include <errno.h>
+- #include <fcntl.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/base/cvss.h>
+- #include <gvm/gmp/gmp.h>
+- #include <gvm/util/fileutils.h>
+-diff --git a/gsad/src/gsad_gmp.h b/gsad/src/gsad_gmp.h
+-index 2889eb483..3eb6f0fe5 100644
+---- a/gsad/src/gsad_gmp.h
+-+++ b/gsad/src/gsad_gmp.h
+-@@ -29,7 +29,7 @@
+- #include "gsad_http.h"         /* for http_connection_t */
+- #include "gsad_user.h"         /* for credentials_t */
+- 
+--#include <glib.h>                 /* for gboolean */
+-+#include <glib-2.0/glib.h>                 /* for gboolean */
+- #include <gvm/util/serverutils.h> /* for gvm_connection_t */
+- 
+- void
+-diff --git a/gsad/src/gsad_gmp_arguments.h b/gsad/src/gsad_gmp_arguments.h
+-index e70afb223..87284cbab 100644
+---- a/gsad/src/gsad_gmp_arguments.h
+-+++ b/gsad/src/gsad_gmp_arguments.h
+-@@ -18,7 +18,7 @@
+- #ifndef _GSAD_GMP_ARGUMENTS_H
+- #define _GSAD_GMP_ARGUMENTS_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- typedef GHashTable gmp_arguments_t;
+- 
+-diff --git a/gsad/src/gsad_gmp_auth.h b/gsad/src/gsad_gmp_auth.h
+-index 1985590ae..2be4c3d2c 100644
+---- a/gsad/src/gsad_gmp_auth.h
+-+++ b/gsad/src/gsad_gmp_auth.h
+-@@ -24,7 +24,7 @@
+- #ifndef _GSAD_GMP_AUTH_H
+- #define _GSAD_GMP_AUTH_H
+- 
+--#include <glib.h> /* for gchar */
+-+#include <glib-2.0/glib.h> /* for gchar */
+- 
+- int
+- authenticate_gmp (const gchar *, const gchar *, gchar **, gchar **, gchar **,
+-diff --git a/gsad/src/gsad_gmp_request.h b/gsad/src/gsad_gmp_request.h
+-index 730304fc7..c9b11d5c9 100644
+---- a/gsad/src/gsad_gmp_request.h
+-+++ b/gsad/src/gsad_gmp_request.h
+-@@ -21,7 +21,7 @@
+- 
+- #include "gsad_gmp_arguments.h" /* for gmp_arguments_t */
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <gvm/util/serverutils.h> /* for gvm_connection_t */
+- 
+- int
+-diff --git a/gsad/src/gsad_http.h b/gsad/src/gsad_http.h
+-index 27b44f4c6..1ba6c12a0 100644
+---- a/gsad/src/gsad_http.h
+-+++ b/gsad/src/gsad_http.h
+-@@ -29,7 +29,7 @@
+- #include "gsad_credentials.h"  /* for credentials_t */
+- #include "gsad_user.h"         /* for user_t */
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <microhttpd.h>
+- 
+- /**
+-diff --git a/gsad/src/gsad_http_handler.c b/gsad/src/gsad_http_handler.c
+-index f3529ad57..c94ac07af 100644
+---- a/gsad/src/gsad_http_handler.c
+-+++ b/gsad/src/gsad_http_handler.c
+-@@ -33,7 +33,7 @@
+- #include "validator.h"        /* for gvm_validate */
+- 
+- #include <assert.h>              /* for assert */
+--#include <glib.h>                /* for g_file_test */
+-+#include <glib-2.0/glib.h>                /* for g_file_test */
+- #include <gvm/base/networking.h> /* for INET6_ADDRSTRLEN */
+- #include <gvm/util/xmlutils.h>   /* for find_element_in_xml_file */
+- #include <stdlib.h>              /* for abort */
+-diff --git a/gsad/src/gsad_i18n.c b/gsad/src/gsad_i18n.c
+-index 4b21cc5a8..a459ebdcd 100644
+---- a/gsad/src/gsad_i18n.c
+-+++ b/gsad/src/gsad_i18n.c
+-@@ -30,7 +30,7 @@
+- #include <assert.h>
+- #include <dirent.h>
+- #include <errno.h>
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <libintl.h>
+- #include <libxml/xpath.h>
+- #include <libxml/xpathInternals.h>
+-diff --git a/gsad/src/gsad_i18n.h b/gsad/src/gsad_i18n.h
+-index e98a0c65b..ab0f1fb72 100644
+---- a/gsad/src/gsad_i18n.h
+-+++ b/gsad/src/gsad_i18n.h
+-@@ -24,7 +24,7 @@
+- #ifndef _GSAD_I18N_H
+- #define _GSAD_I18N_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /**
+-  * @brief Default language code, used when Accept-Language header is missing.
+-diff --git a/gsad/src/gsad_params.h b/gsad/src/gsad_params.h
+-index 84991de22..a29a9c457 100644
+---- a/gsad/src/gsad_params.h
+-+++ b/gsad/src/gsad_params.h
+-@@ -24,7 +24,7 @@
+- #ifndef _GSAD_PARAMS_H
+- #define _GSAD_PARAMS_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- #include <microhttpd.h>
+- 
+- #define params_t GHashTable
+-diff --git a/gsad/src/gsad_session.h b/gsad/src/gsad_session.h
+-index c7748326b..e6cd5ed3f 100644
+---- a/gsad/src/gsad_session.h
+-+++ b/gsad/src/gsad_session.h
+-@@ -26,7 +26,7 @@
+- 
+- #include "gsad_user.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- void
+- session_add_user (const gchar *id, user_t *user);
+-diff --git a/gsad/src/gsad_settings.h b/gsad/src/gsad_settings.h
+-index 5cd00593a..9a26ad470 100644
+---- a/gsad/src/gsad_settings.h
+-+++ b/gsad/src/gsad_settings.h
+-@@ -24,7 +24,7 @@
+- #ifndef _GSAD_SETTINGS_H
+- #define _GSAD_SETTINGS_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- void
+- vendor_version_set (const gchar *);
+-diff --git a/gsad/src/gsad_user.h b/gsad/src/gsad_user.h
+-index 742b0b9cc..2c1416567 100644
+---- a/gsad/src/gsad_user.h
+-+++ b/gsad/src/gsad_user.h
+-@@ -26,7 +26,7 @@
+- 
+- #include "gsad_params.h"
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- #define USER_OK 0
+- #define USER_BAD_TOKEN 1
+-diff --git a/gsad/src/utils.h b/gsad/src/utils.h
+-index 2d1655f4c..2845e8299 100644
+---- a/gsad/src/utils.h
+-+++ b/gsad/src/utils.h
+-@@ -24,7 +24,7 @@
+- #ifndef _GSAD_UTILS_H
+- #define _GSAD_UTILS_H
+- 
+--#include <glib.h> // for gboolean, gchar
+-+#include <glib-2.0/glib.h> // for gboolean, gchar
+- 
+- gboolean
+- str_equal (const gchar *, const gchar *);
+-diff --git a/gsad/src/validator.h b/gsad/src/validator.h
+-index 6dc136e03..996e3fc7b 100644
+---- a/gsad/src/validator.h
+-+++ b/gsad/src/validator.h
+-@@ -24,7 +24,7 @@
+- #ifndef _VALIDATOR_H
+- #define _VALIDATOR_H
+- 
+--#include <glib.h>
+-+#include <glib-2.0/glib.h>
+- 
+- /**
+-  * @brief A set of name rule pairs.
+diff -ruN aports2/community/greenbone-security-assistant/gsad.initd aports/community/greenbone-security-assistant/gsad.initd
+--- aports2/community/greenbone-security-assistant/gsad.initd	2022-05-06 23:57:56.623338801 +0700
++++ aports/community/greenbone-security-assistant/gsad.initd	1970-01-01 08:00:00.000000000 +0800
+@@ -1,28 +0,0 @@
+-#!/sbin/openrc-run
+-
+-: ${GSAD_USER:=gvm}
+-: ${GSAD_GROUP:=gvm}
+-: ${GSAD_TIMEOUT:=30}
+-: ${GSAD_OPTIONS:=--no-redirect --http-only}
+-: ${GSAD_LISTEN_ADDRESS:=127.0.0.1}
+-: ${GSAD_LISTEN_PORT:=9392}
+-: ${GVMD_LISTEN_ADDRESS:=127.0.0.1}
+-: ${GVMD_LISTEN_PORT:=9390}
+-: ${GVMD_GNUTLS_PRIORITIES:=NORMAL}
+-
+-name="Greenbone Security Assistant (GSA)"
+-command="/usr/bin/gsad"
+-command_args="--foreground ${GSAD_OPTIONS} --listen=${GSAD_LISTEN_ADDRESS} --port=${GSAD_LISTEN_PORT} --mlisten=${GVMD_LISTEN_ADDRESS} --mport=${GVMD_LISTEN_PORT} --gnutls-priorities=${GSAD_GNUTLS_PRIORITIES}"
+-command_background="true"
+-command_user="${GSAD_USER}:${GSAD_GROUP}"
+-pidfile="/run/gvm/gsad.pid"
+-retry="${GSAD_TIMEOUT}"
+-
+-depend() {
+-	after firewall
+-	need net gvmd
+-}
+-
+-start_pre() {
+-	checkpath --directory --owner "$command_user" "${pidfile%/*}" /var/log/gvm
+-}
+diff -ruN aports2/community/greenbone-security-assistant/gsad.logrotate aports/community/greenbone-security-assistant/gsad.logrotate
+--- aports2/community/greenbone-security-assistant/gsad.logrotate	2022-05-06 23:57:56.623338801 +0700
++++ aports/community/greenbone-security-assistant/gsad.logrotate	1970-01-01 08:00:00.000000000 +0800
+@@ -1,13 +0,0 @@
+-# Copyright 1999-2019 Gentoo Authors
+-# Distributed under the terms of the GNU General Public License v2
+-# Daemon ignore HUP so we use 'copytruncate' instead of 'create' 
+-# with safe file size to prevent losing log entries.
+-
+-/var/log/gvm/gsad.log {
+-	compress
+-	missingok
+-	notifempty
+-	sharedscripts
+-	copytruncate
+-	maxsize 10M
+-}
+diff -ruN aports2/community/greenbone-security-assistant/gsad-sbin.patch aports/community/greenbone-security-assistant/gsad-sbin.patch
+--- aports2/community/greenbone-security-assistant/gsad-sbin.patch	2022-05-06 23:57:56.623338801 +0700
++++ aports/community/greenbone-security-assistant/gsad-sbin.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,13 +0,0 @@
+-diff --git a/gsad/src/CMakeLists.txt b/gsad/src/CMakeLists.txt
+-index 27dbb22..b7f6d6f 100644
+---- a/gsad/src/CMakeLists.txt
+-+++ b/gsad/src/CMakeLists.txt
+-@@ -177,7 +177,7 @@ add_definitions (-DPREFIX="${CMAKE_INSTALL_PREFIX}")
+- ## Install
+- 
+- install (TARGETS gsad
+--         RUNTIME DESTINATION ${SBINDIR}
+-+         RUNTIME DESTINATION ${BINDIR}
+-          LIBRARY DESTINATION ${LIBDIR}
+-          ARCHIVE DESTINATION ${LIBDIR}/static)
+- 
+diff -ruN aports2/community/greenbone-security-assistant/musl-stack-size.patch aports/community/greenbone-security-assistant/musl-stack-size.patch
+--- aports2/community/greenbone-security-assistant/musl-stack-size.patch	2022-05-06 23:57:56.623338801 +0700
++++ aports/community/greenbone-security-assistant/musl-stack-size.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,28 +0,0 @@
+-diff --git a/gsad/src/gsad.c b/gsad/src/gsad.c
+-index f176b62..37a9d66 100644
+---- a/gsad/src/gsad.c
+-+++ b/gsad/src/gsad.c
+-@@ -2556,6 +2556,7 @@ start_unix_http_daemon (const char *unix_socket_path,
+-     0, NULL, NULL, handler, http_handlers, MHD_OPTION_NOTIFY_COMPLETED,
+-     free_resources, NULL, MHD_OPTION_LISTEN_SOCKET, unix_socket,
+-     MHD_OPTION_PER_IP_CONNECTION_LIMIT, get_per_ip_connection_limit (),
+-+	MHD_OPTION_THREAD_STACK_SIZE, (size_t) 4*1024*1024,
+-     MHD_OPTION_EXTERNAL_LOGGER, mhd_logger, NULL, MHD_OPTION_END);
+- }
+- 
+-@@ -2590,6 +2591,7 @@ start_http_daemon (int port,
+-     flags, port, NULL, NULL, handler, http_handlers,
+-     MHD_OPTION_NOTIFY_COMPLETED, free_resources, NULL, MHD_OPTION_SOCK_ADDR,
+-     address, MHD_OPTION_PER_IP_CONNECTION_LIMIT, get_per_ip_connection_limit (),
+-+	MHD_OPTION_THREAD_STACK_SIZE, (size_t) 4*1024*1024,
+-     MHD_OPTION_EXTERNAL_LOGGER, mhd_logger, NULL, MHD_OPTION_END);
+- }
+- 
+-@@ -2623,6 +2625,7 @@ start_https_daemon (int port, const char *key, const char *cert,
+-     MHD_OPTION_HTTPS_MEM_KEY, key, MHD_OPTION_HTTPS_MEM_CERT, cert,
+-     MHD_OPTION_NOTIFY_COMPLETED, free_resources, NULL, MHD_OPTION_SOCK_ADDR,
+-     address, MHD_OPTION_PER_IP_CONNECTION_LIMIT, get_per_ip_connection_limit (),
+-+	MHD_OPTION_THREAD_STACK_SIZE, (size_t) 4*1024*1024,
+-     MHD_OPTION_HTTPS_PRIORITIES, priorities, MHD_OPTION_EXTERNAL_LOGGER,
+-     mhd_logger, NULL,
+- /* LibmicroHTTPD 0.9.35 and higher. */
 diff -ruN aports2/community/greenbone-security-assistant/remove-husky-git-hook.patch aports/community/greenbone-security-assistant/remove-husky-git-hook.patch
---- aports2/community/greenbone-security-assistant/remove-husky-git-hook.patch	2021-06-28 21:13:09.937362094 +0200
-+++ aports/community/greenbone-security-assistant/remove-husky-git-hook.patch	2021-06-28 21:19:03.916045835 +0200
-@@ -1,16 +1,16 @@
- diff --git a/gsa/package.json b/gsa/package.json
--index 854cd0b..de22257 100644
-+index a4c7309..3076a51 100644
- --- a/gsa/package.json
- +++ b/gsa/package.json
--@@ -86,7 +86,6 @@
--     "@types/jest": "^26.0.22",
-+@@ -87,7 +87,6 @@
-+     "@types/jest": "^26.0.23",
-      "babel-plugin-i18next-extract": "^0.8.3",
--     "eslint-config-prettier": "^8.1.0",
-+     "eslint-config-prettier": "^8.3.0",
- -    "husky": "^2.7.0",
--     "jest-environment-jsdom-sixteen": "^1.0.3",
-+     "jest-environment-jsdom-sixteen": "^2.0.0",
-      "jest-junit": "^12.0.0",
-      "jest-styled-components": "^6.3.4",
--@@ -112,11 +111,6 @@
-+@@ -113,11 +112,6 @@
-      "not op_mini all",
-      "ff ESR"
-    ],
+--- aports2/community/greenbone-security-assistant/remove-husky-git-hook.patch	2022-05-06 23:57:56.623338801 +0700
++++ aports/community/greenbone-security-assistant/remove-husky-git-hook.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,24 +0,0 @@
+-diff --git a/gsa/package.json b/gsa/package.json
+-index a4c7309..3076a51 100644
+---- a/gsa/package.json
+-+++ b/gsa/package.json
+-@@ -87,7 +87,6 @@
+-     "@types/jest": "^26.0.23",
+-     "babel-plugin-i18next-extract": "^0.8.3",
+-     "eslint-config-prettier": "^8.3.0",
+--    "husky": "^2.7.0",
+-     "jest-environment-jsdom-sixteen": "^2.0.0",
+-     "jest-junit": "^12.0.0",
+-     "jest-styled-components": "^6.3.4",
+-@@ -113,11 +112,6 @@
+-     "not op_mini all",
+-     "ff ESR"
+-   ],
+--  "husky": {
+--    "hooks": {
+--      "pre-commit": "lint-staged"
+--    }
+--  },
+-   "lint-staged": {
+-     "*.{js,json}": [
+-       "prettier --write",
 diff -ruN aports2/community/greenbone-security-assistant/timeout.patch aports/community/greenbone-security-assistant/timeout.patch
---- aports2/community/greenbone-security-assistant/timeout.patch	2021-06-28 21:13:09.937362094 +0200
-+++ aports/community/greenbone-security-assistant/timeout.patch	1970-01-01 01:00:00.000000000 +0100
+--- aports2/community/greenbone-security-assistant/timeout.patch	2022-05-06 23:57:56.623338801 +0700
++++ aports/community/greenbone-security-assistant/timeout.patch	1970-01-01 08:00:00.000000000 +0800
 @@ -1,60 +0,0 @@
 -diff -Naur origin/gsa/src/gmp/gmpsettings.js patch/gsa/src/gmp/gmpsettings.js
 ---- origin/gsa/src/gmp/gmpsettings.js	2021-04-16 11:27:51.000000000 +0200

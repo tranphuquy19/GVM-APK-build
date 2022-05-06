@@ -1,12 +1,54 @@
 diff -ruN aports2/community/py3-gvm/APKBUILD aports/community/py3-gvm/APKBUILD
---- aports2/community/py3-gvm/APKBUILD	2021-07-01 15:30:00.528710238 +0200
-+++ aports/community/py3-gvm/APKBUILD	2021-06-28 21:19:04.164047714 +0200
-@@ -3,7 +3,7 @@
- pkgname=py3-gvm
- _pkgname=${pkgname/py3/python}
- pkgver=21.6.0
+--- aports2/community/py3-gvm/APKBUILD	2022-05-06 23:57:56.635338910 +0700
++++ aports/community/py3-gvm/APKBUILD	1970-01-01 08:00:00.000000000 +0800
+@@ -1,32 +0,0 @@
+-# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+-# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+-pkgname=py3-gvm
+-_pkgname=${pkgname/py3/python}
+-pkgver=21.6.0
 -pkgrel=10
-+pkgrel=0
- pkgdesc="Greenbone Vulnerability Management Python Library "
- url="https://github.com/greenbone/python-gvm"
- arch="noarch"
+-pkgdesc="Greenbone Vulnerability Management Python Library "
+-url="https://github.com/greenbone/python-gvm"
+-arch="noarch"
+-license="GPL-3.0"
+-makedepends="pyproject2setuppy py3-setuptools"
+-checkdepends="py3-defusedxml py3-pytest py3-lxml py3-paramiko"
+-source="$pkgname-$pkgver.tar.gz::https://github.com/greenbone/$_pkgname/archive/v${pkgver/_/.}.tar.gz
+-create-setuppy.patch"
+-builddir="$srcdir/$_pkgname-${pkgver/_/.}"
+-
+-build() {
+-	python3 setup.py build
+-}
+-
+-check() {
+-	python3 setup.py check
+-}
+-
+-package() {
+-	python3 setup.py install --prefix=/usr --root="$pkgdir"
+-}
+-
+-sha512sums="
+-9ba8a14eb8a887834a00a0d589a6ddda4a332e12f57de05b7a7fee580a8270dcb1595eb2066f11343e9365038e5be058ad8ad63879a4840ddd0f733f79b535bc  py3-gvm-21.6.0.tar.gz
+-1b561db05974468eecec48f2b4e0f705b4bb9bdfdf6a1c1ce40ad884824ca468243cd4296325674fa311b3ce32827d924383f814c8475b6ccddad302a5c23f51  create-setuppy.patch
+-"
+diff -ruN aports2/community/py3-gvm/create-setuppy.patch aports/community/py3-gvm/create-setuppy.patch
+--- aports2/community/py3-gvm/create-setuppy.patch	2022-05-06 23:57:56.635338910 +0700
++++ aports/community/py3-gvm/create-setuppy.patch	1970-01-01 08:00:00.000000000 +0800
+@@ -1,14 +0,0 @@
+-Author: Francesco Colista <fcolista@alpinelinux.org>
+-Date:   Tue May 19 18:56:39 2020 +0000
+-
+-    added setup.py to build package with setuptools
+-
+-diff --git a/setup.py b/setup.py
+-new file mode 100644
+-index 0000000..ebe2f51
+---- /dev/null
+-+++ b/setup.py
+-@@ -0,0 +1,3 @@
+-+#!/usr/bin/env python3
+-+from pyproject2setuppy.main import main
+-+main()
