@@ -1,5 +1,5 @@
 diff --git a/misc/network.c b/misc/network.c
-index 163cb8d6..f294d2ee 100644
+index 38f58d31..cf1dcf8a 100644
 --- a/misc/network.c
 +++ b/misc/network.c
 @@ -29,7 +29,7 @@
@@ -12,7 +12,7 @@ index 163cb8d6..f294d2ee 100644
  #include <gnutls/x509.h>
  #include <gvm/base/logging.h>
 diff --git a/misc/scanneraux.h b/misc/scanneraux.h
-index 7f743c43..ff32e275 100644
+index 3f852a7f..d107678f 100644
 --- a/misc/scanneraux.h
 +++ b/misc/scanneraux.h
 @@ -25,7 +25,7 @@
@@ -25,12 +25,12 @@ index 7f743c43..ff32e275 100644
  #include <gvm/util/kb.h>
  
 diff --git a/misc/strutils.c b/misc/strutils.c
-index de5680f1..3a36d3bf 100644
+index 829c2939..21dbb84f 100644
 --- a/misc/strutils.c
 +++ b/misc/strutils.c
-@@ -18,7 +18,7 @@
- 
- #include "strutils.h"
+@@ -16,7 +16,7 @@
+  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+  */
  
 -#include <glib.h>
 +#include <glib-2.0/glib.h>
@@ -38,7 +38,7 @@ index de5680f1..3a36d3bf 100644
  /**
   * @brief Matches a string against a pattern.
 diff --git a/misc/strutils.h b/misc/strutils.h
-index 270fd309..4885b35f 100644
+index 8e2a595b..88d39804 100644
 --- a/misc/strutils.h
 +++ b/misc/strutils.h
 @@ -19,7 +19,7 @@
@@ -51,7 +51,7 @@ index 270fd309..4885b35f 100644
  int
  str_match (const gchar *, const gchar *, int);
 diff --git a/misc/support.h b/misc/support.h
-index 2f90ccf7..82aa5075 100644
+index d324bf77..e1abe7d7 100644
 --- a/misc/support.h
 +++ b/misc/support.h
 @@ -36,7 +36,7 @@
@@ -63,21 +63,8 @@ index 2f90ccf7..82aa5075 100644
  #if GLIB_MAJOR_VERSION >= 2 && GLIB_MINOR_VERSION < 68
  #define g_memdup2 g_memdup
  #endif
-diff --git a/misc/table_driven_lsc.h b/misc/table_driven_lsc.h
-index fc8fe2f4..18bae35e 100644
---- a/misc/table_driven_lsc.h
-+++ b/misc/table_driven_lsc.h
-@@ -25,7 +25,7 @@
- #ifndef TABLE_DRIVEN_LSC_H
- #define TABLE_DRIVEN_LSC_H
- 
--#include <glib.h>
-+#include <glib-2.0/glib.h>
- 
- gchar *
- make_table_driven_lsc_info_json_str (const char *, const char *, const char *,
 diff --git a/misc/vendorversion.c b/misc/vendorversion.c
-index 856d5d99..842650ec 100644
+index b816f02a..1440e43b 100644
 --- a/misc/vendorversion.c
 +++ b/misc/vendorversion.c
 @@ -24,7 +24,7 @@
@@ -90,7 +77,7 @@ index 856d5d99..842650ec 100644
  /**
   * @brief Vendor version, or NULL.
 diff --git a/misc/vendorversion.h b/misc/vendorversion.h
-index c40c5df1..26c5c693 100644
+index e3291e8a..1305de16 100644
 --- a/misc/vendorversion.h
 +++ b/misc/vendorversion.h
 @@ -25,7 +25,7 @@
@@ -116,10 +103,10 @@ index a589b9f0..c5275d05 100644
  #include <pcap.h>
  #include <sys/param.h>
 diff --git a/nasl/exec.c b/nasl/exec.c
-index f341c7c8..39d076f2 100644
+index 3f5190e2..1779a9d4 100644
 --- a/nasl/exec.c
 +++ b/nasl/exec.c
-@@ -32,8 +32,8 @@
+@@ -31,8 +31,8 @@
  #include "nasl_tree.h"
  #include "nasl_var.h"
  
@@ -131,11 +118,11 @@ index f341c7c8..39d076f2 100644
  #include <gvm/base/prefs.h>     /* for prefs_get */
  #include <gvm/util/nvticache.h> /* for nvticache_get_kb */
 diff --git a/nasl/iconv.c b/nasl/iconv.c
-index 748e24c8..bb23e434 100644
+index 4fff507a..88749fd4 100644
 --- a/nasl/iconv.c
 +++ b/nasl/iconv.c
-@@ -30,7 +30,7 @@
- #include "proto.h"
+@@ -29,7 +29,7 @@
+ #include "charset.h"
  #include "smb.h"
  
 -#include <glib.h>
@@ -144,7 +131,7 @@ index 748e24c8..bb23e434 100644
  typedef unsigned int bool;
  
 diff --git a/nasl/nasl-lint.c b/nasl/nasl-lint.c
-index 0b021e27..ccaa07ac 100644
+index 1a4f3e9f..34690b0b 100644
 --- a/nasl/nasl-lint.c
 +++ b/nasl/nasl-lint.c
 @@ -24,8 +24,8 @@
@@ -159,7 +146,7 @@ index 0b021e27..ccaa07ac 100644
  #include <stdlib.h>  /* for exit */
  
 diff --git a/nasl/nasl.c b/nasl/nasl.c
-index b9fd27f1..956f7b43 100644
+index 5061f05e..6deb642d 100644
 --- a/nasl/nasl.c
 +++ b/nasl/nasl.c
 @@ -32,7 +32,7 @@
@@ -185,23 +172,23 @@ index e341e316..6e17a235 100644
  /* Signature information extraction and verification (not nasl- specific
    anymore, thus likely to be moved to openvas-libraries): */
 diff --git a/nasl/nasl_builtin_find_service.c b/nasl/nasl_builtin_find_service.c
-index 10045eb1..e29010e9 100644
+index a0a1689f..dcdb7f09 100644
 --- a/nasl/nasl_builtin_find_service.c
 +++ b/nasl/nasl_builtin_find_service.c
-@@ -26,7 +26,7 @@
+@@ -25,7 +25,7 @@
  
  #include <ctype.h> /* for tolower() */
  #include <errno.h> /* for errno() */
 -#include <glib.h>
 +#include <glib-2.0/glib.h>
- #include <gvm/util/mqtt.h>
  #include <gvm/util/nvticache.h>
  #include <regex.h>     /* for regex_t */
+ #include <signal.h>    /* for signal() */
 diff --git a/nasl/nasl_builtin_openvas_tcp_scanner.c b/nasl/nasl_builtin_openvas_tcp_scanner.c
-index 1b44f5de..56a7d913 100644
+index 96a12df6..44d7d99a 100644
 --- a/nasl/nasl_builtin_openvas_tcp_scanner.c
 +++ b/nasl/nasl_builtin_openvas_tcp_scanner.c
-@@ -23,7 +23,7 @@
+@@ -22,7 +22,7 @@
  
  #include <errno.h> /* for errno() */
  #include <fcntl.h> /* for fcntl() */
@@ -211,7 +198,7 @@ index 1b44f5de..56a7d913 100644
  #include <gvm/base/prefs.h> /* for prefs_get */
  #include <netdb.h>          /* for getprotobyname() */
 diff --git a/nasl/nasl_cert.c b/nasl/nasl_cert.c
-index 1e68195d..a8d707c3 100644
+index 711a8764..2e45ca0f 100644
 --- a/nasl/nasl_cert.c
 +++ b/nasl/nasl_cert.c
 @@ -38,8 +38,8 @@
@@ -239,7 +226,7 @@ index de80ccf7..4878ce88 100644
  #include <gvm/base/prefs.h>           /* for prefs_get_bool() */
  #include <signal.h>                   /* for kill */
 diff --git a/nasl/nasl_crypto.c b/nasl/nasl_crypto.c
-index 46c77894..a1a86dbd 100644
+index eb5b9791..424c1c18 100644
 --- a/nasl/nasl_crypto.c
 +++ b/nasl/nasl_crypto.c
 @@ -42,7 +42,7 @@
@@ -252,7 +239,7 @@ index 46c77894..a1a86dbd 100644
  #include <stdlib.h>
  
 diff --git a/nasl/nasl_func.c b/nasl/nasl_func.c
-index a38e96e3..72b248fe 100644
+index 5f4829ae..83a77c87 100644
 --- a/nasl/nasl_func.c
 +++ b/nasl/nasl_func.c
 @@ -25,7 +25,7 @@
@@ -265,10 +252,10 @@ index a38e96e3..72b248fe 100644
  #include <string.h> /* for strcmp */
  
 diff --git a/nasl/nasl_grammar.y b/nasl/nasl_grammar.y
-index e5bda9b7..0b3d9395 100644
+index c476acba..14d4710c 100644
 --- a/nasl/nasl_grammar.y
 +++ b/nasl/nasl_grammar.y
-@@ -34,7 +34,7 @@
+@@ -31,7 +31,7 @@
  #include <string.h> /* for strlen */
  #include <sys/stat.h> /* for stat */
  
@@ -278,7 +265,7 @@ index e5bda9b7..0b3d9395 100644
  #include "nasl_tree.h"
  #include "nasl_global_ctxt.h"
 diff --git a/nasl/nasl_http.c b/nasl/nasl_http.c
-index 37faae0c..b7c3cdf8 100644
+index bb897f90..1d463913 100644
 --- a/nasl/nasl_http.c
 +++ b/nasl/nasl_http.c
 @@ -30,7 +30,7 @@
@@ -290,21 +277,8 @@ index 37faae0c..b7c3cdf8 100644
  #include <gvm/base/prefs.h> /* for prefs_get */
  #include <gvm/util/kb.h>    /* for kb_item_get_str */
  #include <string.h>         /* for strlen */
-diff --git a/nasl/nasl_init.h b/nasl/nasl_init.h
-index a7af978b..1fcf439b 100644
---- a/nasl/nasl_init.h
-+++ b/nasl/nasl_init.h
-@@ -20,7 +20,7 @@
- #define NASL_INIT_H
- #include "nasl_lex_ctxt.h"
- 
--#include <glib.h>
-+#include <glib-2.0/glib.h>
- 
- void
- init_nasl_library (lex_ctxt *);
 diff --git a/nasl/nasl_isotime.c b/nasl/nasl_isotime.c
-index d673600e..2cee0b13 100644
+index 6f431fd6..ceaafc06 100644
 --- a/nasl/nasl_isotime.c
 +++ b/nasl/nasl_isotime.c
 @@ -55,8 +55,8 @@
@@ -345,7 +319,7 @@ index cd140088..8bad9916 100644
  /* for tree_cell */
  #include "nasl_tree.h"
 diff --git a/nasl/nasl_misc_funcs.c b/nasl/nasl_misc_funcs.c
-index 7f438349..993ac86f 100644
+index abdfa52a..e07cb572 100644
 --- a/nasl/nasl_misc_funcs.c
 +++ b/nasl/nasl_misc_funcs.c
 @@ -38,7 +38,7 @@
@@ -356,9 +330,9 @@ index 7f438349..993ac86f 100644
 +#include <glib-2.0/glib.h>
  #include <gvm/util/compressutils.h> /* for gvm_uncompress */
  #include <gvm/util/kb.h>            /* for KB_TYPE_STR */
- #include <stdbool.h>                /* for boolean */
+ #include <stdlib.h>                 /* for lrand48 */
 diff --git a/nasl/nasl_scanner_glue.c b/nasl/nasl_scanner_glue.c
-index 5905f784..a2cf5117 100644
+index 437bbeeb..b7ccb6f0 100644
 --- a/nasl/nasl_scanner_glue.c
 +++ b/nasl/nasl_scanner_glue.c
 @@ -41,7 +41,7 @@
@@ -371,7 +345,7 @@ index 5905f784..a2cf5117 100644
  #include <gvm/base/prefs.h> /* for prefs_get */
  #include <gvm/util/kb.h>    /* for KB_TYPE_INT */
 diff --git a/nasl/nasl_ssh.c b/nasl/nasl_ssh.c
-index f89d2c89..b4545c90 100644
+index 95fe36cc..002afd27 100644
 --- a/nasl/nasl_ssh.c
 +++ b/nasl/nasl_ssh.c
 @@ -42,8 +42,8 @@
@@ -386,7 +360,7 @@ index f89d2c89..b4545c90 100644
  #include <gvm/base/networking.h>
  #include <gvm/base/prefs.h> /* for prefs_get() */
 diff --git a/nasl/nasl_text_utils.c b/nasl/nasl_text_utils.c
-index cb20b5b0..4217cc64 100644
+index 4b309d36..5f0265a3 100644
 --- a/nasl/nasl_text_utils.c
 +++ b/nasl/nasl_text_utils.c
 @@ -36,7 +36,7 @@
@@ -399,7 +373,7 @@ index cb20b5b0..4217cc64 100644
  #include <string.h> /* for strlen */
  #include <string.h> /* for memmem */
 diff --git a/nasl/nasl_tree.c b/nasl/nasl_tree.c
-index 2adbb48f..92f0e17a 100644
+index 11dbe3f7..a3af825f 100644
 --- a/nasl/nasl_tree.c
 +++ b/nasl/nasl_tree.c
 @@ -25,7 +25,7 @@
@@ -412,7 +386,7 @@ index 2adbb48f..92f0e17a 100644
  #include <stdlib.h> /* for abort */
  #include <string.h> /* for memcpy */
 diff --git a/nasl/nasl_var.c b/nasl/nasl_var.c
-index 07dae0c6..703fd28d 100644
+index 7ad4da2a..b4d31e87 100644
 --- a/nasl/nasl_var.c
 +++ b/nasl/nasl_var.c
 @@ -25,7 +25,7 @@
@@ -425,7 +399,7 @@ index 07dae0c6..703fd28d 100644
  #include <string.h> /* for strlen */
  
 diff --git a/nasl/ntlmssp.c b/nasl/ntlmssp.c
-index 5455fa4b..0df4ccd9 100644
+index a540e147..11247fec 100644
 --- a/nasl/ntlmssp.c
 +++ b/nasl/ntlmssp.c
 @@ -25,7 +25,7 @@
@@ -438,7 +412,7 @@ index 5455fa4b..0df4ccd9 100644
  #define NTLMSSP_NEGOTIATE_LM_KEY 0x00000080
  
 diff --git a/nasl/smb_crypt.c b/nasl/smb_crypt.c
-index 2401e83d..95490208 100644
+index 05c107d9..a334b6ba 100644
 --- a/nasl/smb_crypt.c
 +++ b/nasl/smb_crypt.c
 @@ -60,7 +60,7 @@
@@ -451,20 +425,20 @@ index 2401e83d..95490208 100644
  
  #ifndef FSTRING_LEN
 diff --git a/src/attack.c b/src/attack.c
-index 7a5a4ed7..858feb56 100644
+index ef20ec34..19031d4d 100644
 --- a/src/attack.c
 +++ b/src/attack.c
-@@ -43,7 +43,7 @@
- #include <bsd/unistd.h>
- #include <errno.h> /* for errno() */
+@@ -41,7 +41,7 @@
+ #include <arpa/inet.h> /* for inet_ntoa() */
+ #include <errno.h>     /* for errno() */
  #include <fcntl.h>
 -#include <glib.h>
 +#include <glib-2.0/glib.h>
  #include <gvm/base/hosts.h>
  #include <gvm/base/networking.h>
- #include <gvm/base/prefs.h>            /* for prefs_get() */
+ #include <gvm/base/prefs.h> /* for prefs_get() */
 diff --git a/src/hosts.c b/src/hosts.c
-index 48a2e962..8cf0d6ef 100644
+index 0069930b..0bdd98d0 100644
 --- a/src/hosts.c
 +++ b/src/hosts.c
 @@ -29,7 +29,7 @@
@@ -477,46 +451,46 @@ index 48a2e962..8cf0d6ef 100644
  #include <stdio.h>               /* for snprintf() */
  #include <string.h>              /* for strlen() */
 diff --git a/src/nasl_plugins.c b/src/nasl_plugins.c
-index 0e814d0a..ebb8f0e1 100644
+index ae105c45..7eb8f284 100644
 --- a/src/nasl_plugins.c
 +++ b/src/nasl_plugins.c
-@@ -33,7 +33,7 @@
+@@ -32,7 +32,7 @@
+ #include "processes.h"
  
- #include <bsd/unistd.h>
  #include <errno.h> /* for errno */
 -#include <glib.h>
 +#include <glib-2.0/glib.h>
  #include <gvm/base/drop_privileges.h> /* for drop_privileges */
  #include <gvm/base/networking.h>
- #include <gvm/base/prefs.h>     /* for prefs_get_bool */
+ #include <gvm/base/prefs.h> /* for prefs_get_bool */
 diff --git a/src/openvas.c b/src/openvas.c
-index fb22d6d0..0c904241 100644
+index fdf00dad..4648f78e 100644
 --- a/src/openvas.c
 +++ b/src/openvas.c
-@@ -48,7 +48,7 @@
- #include <errno.h>      /* for errno() */
- #include <fcntl.h>      /* for open() */
- #include <gcrypt.h>     /* for gcry_control */
+@@ -44,7 +44,7 @@
+ #include <errno.h>  /* for errno() */
+ #include <fcntl.h>  /* for open() */
+ #include <gcrypt.h> /* for gcry_control */
 -#include <glib.h>
 +#include <glib-2.0/glib.h>
  #include <gnutls/gnutls.h> /* for gnutls_global_set_log_*  */
  #include <grp.h>
  #include <gvm/base/logging.h> /* for setup_log_handler, load_log_configuration, free_log_configuration*/
 diff --git a/src/pluginload.c b/src/pluginload.c
-index 5f04ff7b..d133c635 100644
+index b4f9daa1..b3929a56 100644
 --- a/src/pluginload.c
 +++ b/src/pluginload.c
-@@ -32,7 +32,7 @@
+@@ -31,7 +31,7 @@
+ #include "utils.h"
  
- #include <bsd/unistd.h>
  #include <errno.h>
 -#include <glib.h>
 +#include <glib-2.0/glib.h>
- #include <gvm/base/prefs.h>     /* for prefs_get() */
+ #include <gvm/base/prefs.h> /* for prefs_get() */
+ #include <gvm/base/proctitle.h>
  #include <gvm/util/nvticache.h> /* for nvticache_new */
- #include <stdio.h>
 diff --git a/src/pluginscheduler.c b/src/pluginscheduler.c
-index e2b006c1..b5ce72a3 100644
+index 6ce573b1..2683f13e 100644
 --- a/src/pluginscheduler.c
 +++ b/src/pluginscheduler.c
 @@ -30,7 +30,7 @@
@@ -529,7 +503,7 @@ index e2b006c1..b5ce72a3 100644
  #include <gvm/util/nvticache.h> /* for nvticache_t */
  #include <malloc.h>
 diff --git a/src/pluginscheduler.h b/src/pluginscheduler.h
-index d3edfd22..780e7b3c 100644
+index 8ded9988..e539ce81 100644
 --- a/src/pluginscheduler.h
 +++ b/src/pluginscheduler.h
 @@ -26,7 +26,7 @@
@@ -542,26 +516,26 @@ index d3edfd22..780e7b3c 100644
  struct plugins_scheduler;
  
 diff --git a/src/processes.c b/src/processes.c
-index 977eda4d..3c5a21ea 100644
+index ba65a13c..9f43c7ed 100644
 --- a/src/processes.c
 +++ b/src/processes.c
-@@ -29,7 +29,7 @@
+@@ -28,7 +28,7 @@
  #include "sighand.h"
  
  #include <errno.h>            /* for errno() */
 -#include <glib.h>             /* for g_error */
 +#include <glib-2.0/glib.h>             /* for g_error */
  #include <gvm/base/logging.h> /* for gvm_log_lock/unlock() */
- #include <gvm/util/mqtt.h>    /* for mqtt_reset() */
  #include <setjmp.h>
+ #include <signal.h>   /* for kill() */
 diff --git a/src/sighand.c b/src/sighand.c
-index 111a5f8d..c549c912 100644
+index 72b2e056..675b4926 100644
 --- a/src/sighand.c
 +++ b/src/sighand.c
-@@ -28,7 +28,7 @@
- #include "debug_utils.h"
- 
+@@ -25,7 +25,7 @@
+ #ifdef HAVE_EXECINFO_H
  #include <execinfo.h> /* for backtrace() */
+ #endif
 -#include <glib.h>     /* for G_LOG_DOMAIN, for g_critical() */
 +#include <glib-2.0/glib.h>     /* for G_LOG_DOMAIN, for g_critical() */
  #include <signal.h>   /* for kill() */
