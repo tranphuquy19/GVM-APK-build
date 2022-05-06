@@ -1,8 +1,8 @@
 diff --git a/src/gmp.c b/src/gmp.c
-index 9a5b6789a..170298097 100644
+index e8c3e7940..297fe0e5d 100644
 --- a/src/gmp.c
 +++ b/src/gmp.c
-@@ -102,7 +102,7 @@
+@@ -103,7 +103,7 @@
  #include <assert.h>
  #include <errno.h>
  #include <fcntl.h>
@@ -12,7 +12,7 @@ index 9a5b6789a..170298097 100644
  #include <netinet/in.h>
  #include <string.h>
 diff --git a/src/gmp.h b/src/gmp.h
-index 113bbdde7..fd39fab50 100644
+index 364f39f7a..b64f9d718 100644
 --- a/src/gmp.h
 +++ b/src/gmp.h
 @@ -27,7 +27,7 @@
@@ -25,7 +25,7 @@ index 113bbdde7..fd39fab50 100644
  #include <gvm/util/serverutils.h>
  #include <sys/types.h>
 diff --git a/src/gmp_base.h b/src/gmp_base.h
-index 38a4bbfec..fdcc5bcb4 100644
+index 15db793ad..db78d6bd2 100644
 --- a/src/gmp_base.h
 +++ b/src/gmp_base.h
 @@ -19,7 +19,7 @@
@@ -38,7 +38,7 @@ index 38a4bbfec..fdcc5bcb4 100644
  /**
   * @brief A handle on a GMP parser.
 diff --git a/src/gmp_configs.c b/src/gmp_configs.c
-index a02956cc9..e912dcd62 100644
+index a1be727f5..077f1a413 100644
 --- a/src/gmp_configs.c
 +++ b/src/gmp_configs.c
 @@ -30,7 +30,7 @@
@@ -51,7 +51,7 @@ index a02956cc9..e912dcd62 100644
  #include <string.h>
  
 diff --git a/src/gmp_delete.h b/src/gmp_delete.h
-index b9bf35d62..3675a8156 100644
+index 0adb621a7..37e8b052d 100644
 --- a/src/gmp_delete.h
 +++ b/src/gmp_delete.h
 @@ -21,7 +21,7 @@
@@ -63,8 +63,21 @@ index b9bf35d62..3675a8156 100644
  
  void
  delete_start (const gchar *, const gchar *, const gchar **, const gchar **);
+diff --git a/src/gmp_license.h b/src/gmp_license.h
+index 4802fdacd..ea49d2778 100644
+--- a/src/gmp_license.h
++++ b/src/gmp_license.h
+@@ -18,7 +18,7 @@
+ 
+ #include "gmp_base.h"
+ 
+-#include <glib.h>
++#include <glib-2.0/glib.h>
+ #include <gvm/util/xmlutils.h>
+ 
+ 
 diff --git a/src/gmp_tickets.c b/src/gmp_tickets.c
-index 3b60d92dd..50e1211eb 100644
+index 5e1e9c928..c067f6339 100644
 --- a/src/gmp_tickets.c
 +++ b/src/gmp_tickets.c
 @@ -28,7 +28,7 @@
@@ -77,7 +90,7 @@ index 3b60d92dd..50e1211eb 100644
  #include <string.h>
  
 diff --git a/src/gmp_tls_certificates.c b/src/gmp_tls_certificates.c
-index c5b8a893f..939cbd644 100644
+index 402abc74e..125f0916e 100644
 --- a/src/gmp_tls_certificates.c
 +++ b/src/gmp_tls_certificates.c
 @@ -29,7 +29,7 @@
@@ -90,7 +103,7 @@ index c5b8a893f..939cbd644 100644
  #include <string.h>
  
 diff --git a/src/gmpd.h b/src/gmpd.h
-index 3bf2bca58..262d1ed75 100644
+index 18eec688d..eac51aba8 100644
 --- a/src/gmpd.h
 +++ b/src/gmpd.h
 @@ -27,7 +27,7 @@
@@ -103,7 +116,7 @@ index 3bf2bca58..262d1ed75 100644
  #include <gvm/util/serverutils.h>
  #include <netinet/in.h>
 diff --git a/src/gvmd.c b/src/gvmd.c
-index a549446d3..8c4059655 100644
+index fbbbe73f3..eb15de049 100644
 --- a/src/gvmd.c
 +++ b/src/gvmd.c
 @@ -72,8 +72,8 @@
@@ -117,17 +130,8 @@ index a549446d3..8c4059655 100644
  #include <gnutls/gnutls.h>
  #include <grp.h>
  #include <netdb.h>
-@@ -90,7 +90,7 @@
- #include <sys/types.h>
- #include <sys/wait.h>
- #include <unistd.h>
--#include <glib/gmessages.h>
-+#include <glib-2.0/glib/gmessages.h>
- 
- #include <gvm/base/pidfile.h>
- #include <gvm/base/pwpolicy.h>
 diff --git a/src/iterator.h b/src/iterator.h
-index c9d0b4e8e..97bf8c182 100644
+index dd241abc5..f01ef3cda 100644
 --- a/src/iterator.h
 +++ b/src/iterator.h
 @@ -29,7 +29,7 @@
@@ -140,7 +144,7 @@ index c9d0b4e8e..97bf8c182 100644
  /* Types. */
  
 diff --git a/src/lsc_crypt.c b/src/lsc_crypt.c
-index 0c1b35235..e568661ed 100644
+index d8927d3c4..1be830751 100644
 --- a/src/lsc_crypt.c
 +++ b/src/lsc_crypt.c
 @@ -23,8 +23,8 @@
@@ -155,7 +159,7 @@ index 0c1b35235..e568661ed 100644
  #include <string.h>
  #include <stdarg.h>
 diff --git a/src/lsc_crypt.h b/src/lsc_crypt.h
-index 74cb2e306..802eedf6a 100644
+index 153170e74..06dbf9a30 100644
 --- a/src/lsc_crypt.h
 +++ b/src/lsc_crypt.h
 @@ -24,7 +24,7 @@
@@ -168,7 +172,7 @@ index 74cb2e306..802eedf6a 100644
  /* (Defined in gvmd.c) */
  extern int disable_encrypted_credentials;
 diff --git a/src/lsc_user.c b/src/lsc_user.c
-index f56b77301..f17d9847b 100644
+index 5d7e8b6ec..ff52d78c7 100644
 --- a/src/lsc_user.c
 +++ b/src/lsc_user.c
 @@ -23,8 +23,8 @@
@@ -183,7 +187,7 @@ index f56b77301..f17d9847b 100644
  #include <stdlib.h>
  #include <string.h>
 diff --git a/src/lsc_user.h b/src/lsc_user.h
-index 941a86212..2faa20997 100644
+index cdde9ff81..469de32e9 100644
 --- a/src/lsc_user.h
 +++ b/src/lsc_user.h
 @@ -24,7 +24,7 @@
@@ -196,10 +200,10 @@ index 941a86212..2faa20997 100644
  int
  lsc_user_keys_create (const gchar *, gchar **);
 diff --git a/src/manage.c b/src/manage.c
-index da2a19fea..446edf7b4 100644
+index 6e9017ee8..6700cb92e 100644
 --- a/src/manage.c
 +++ b/src/manage.c
-@@ -64,7 +64,7 @@
+@@ -65,7 +65,7 @@
  #include <errno.h>
  #include <dirent.h>
  #include <fcntl.h>
@@ -209,7 +213,7 @@ index da2a19fea..446edf7b4 100644
  #include <math.h>
  #include <locale.h>
 diff --git a/src/manage.h b/src/manage.h
-index 8b4223007..de2f5077d 100644
+index 03a11b83d..aceb6c1e2 100644
 --- a/src/manage.h
 +++ b/src/manage.h
 @@ -30,7 +30,7 @@
@@ -222,7 +226,7 @@ index 8b4223007..de2f5077d 100644
  
  #include <gvm/base/array.h>
 diff --git a/src/manage_acl.h b/src/manage_acl.h
-index 58b0ec1f0..fe941c2c0 100644
+index 16977d4a5..352f61790 100644
 --- a/src/manage_acl.h
 +++ b/src/manage_acl.h
 @@ -25,7 +25,7 @@
@@ -235,7 +239,7 @@ index 58b0ec1f0..fe941c2c0 100644
  /**
   * @brief Generate SQL for user permission check.
 diff --git a/src/manage_configs.c b/src/manage_configs.c
-index 520305a72..0c55228e1 100644
+index f06f03f88..ebac2f8f9 100644
 --- a/src/manage_configs.c
 +++ b/src/manage_configs.c
 @@ -30,7 +30,7 @@
@@ -248,7 +252,7 @@ index 520305a72..0c55228e1 100644
  #include <stdlib.h>
  #include <string.h>
 diff --git a/src/manage_get.h b/src/manage_get.h
-index aad04cde8..201954beb 100644
+index 09d56fb7e..2a22244f1 100644
 --- a/src/manage_get.h
 +++ b/src/manage_get.h
 @@ -26,7 +26,7 @@
@@ -260,8 +264,21 @@ index aad04cde8..201954beb 100644
  
  /**
   * @brief Command data for a get command.
+diff --git a/src/manage_license.h b/src/manage_license.h
+index eb0e54a59..77c39f162 100644
+--- a/src/manage_license.h
++++ b/src/manage_license.h
+@@ -23,7 +23,7 @@
+  * Headers for non-SQL license information code for the GVM management layer.
+  */
+ 
+-#include <glib.h>
++#include <glib-2.0/glib.h>
+ 
+ #ifdef HAS_LIBTHEIA
+ #include <theia/client.h>
 diff --git a/src/manage_migrators.c b/src/manage_migrators.c
-index d665a5eb4..851c8d416 100644
+index b3c3ee2e2..ca066d4b3 100644
 --- a/src/manage_migrators.c
 +++ b/src/manage_migrators.c
 @@ -117,7 +117,7 @@
@@ -274,7 +291,7 @@ index d665a5eb4..851c8d416 100644
  #include <string.h>
  #include <sys/param.h>
 diff --git a/src/manage_port_lists.h b/src/manage_port_lists.h
-index 9cbf222ff..7852e0187 100644
+index 32c884327..8a98700da 100644
 --- a/src/manage_port_lists.h
 +++ b/src/manage_port_lists.h
 @@ -21,7 +21,7 @@
@@ -287,7 +304,7 @@ index 9cbf222ff..7852e0187 100644
  gboolean
  find_port_list (const char*, port_list_t*);
 diff --git a/src/manage_report_formats.c b/src/manage_report_formats.c
-index acfa13ea4..5f927a6ef 100644
+index b5f0fe403..5f4f036c8 100644
 --- a/src/manage_report_formats.c
 +++ b/src/manage_report_formats.c
 @@ -32,7 +32,7 @@
@@ -300,7 +317,7 @@ index acfa13ea4..5f927a6ef 100644
  #include <locale.h>
  #include <stdlib.h>
 diff --git a/src/manage_report_formats.h b/src/manage_report_formats.h
-index 2e0e2dde7..a9ca4e69c 100644
+index 5172fdaef..1dc60ae77 100644
 --- a/src/manage_report_formats.h
 +++ b/src/manage_report_formats.h
 @@ -21,7 +21,7 @@
@@ -313,10 +330,10 @@ index 2e0e2dde7..a9ca4e69c 100644
  gboolean
  find_report_format_with_permission (const char*, report_format_t*,
 diff --git a/src/manage_sql.c b/src/manage_sql.c
-index d20717317..10ea21bab 100644
+index 88c0f37f7..404ca131f 100644
 --- a/src/manage_sql.c
 +++ b/src/manage_sql.c
-@@ -51,7 +51,7 @@
+@@ -52,7 +52,7 @@
  #include <ctype.h>
  #include <dirent.h>
  #include <errno.h>
@@ -326,7 +343,7 @@ index d20717317..10ea21bab 100644
  #include <malloc.h>
  #include <pwd.h>
 diff --git a/src/manage_sql_configs.c b/src/manage_sql_configs.c
-index fc4fa34b4..5f3528386 100644
+index 7b5faefcf..4e51e285e 100644
 --- a/src/manage_sql_configs.c
 +++ b/src/manage_sql_configs.c
 @@ -32,7 +32,7 @@
@@ -339,7 +356,7 @@ index fc4fa34b4..5f3528386 100644
  #include <string.h>
  
 diff --git a/src/manage_sql_port_lists.c b/src/manage_sql_port_lists.c
-index a9083afd0..360b19a47 100644
+index 790b023f9..981321562 100644
 --- a/src/manage_sql_port_lists.c
 +++ b/src/manage_sql_port_lists.c
 @@ -29,8 +29,8 @@
@@ -354,10 +371,10 @@ index a9083afd0..360b19a47 100644
  #include <string.h>
  #include <strings.h>
 diff --git a/src/manage_sql_report_formats.c b/src/manage_sql_report_formats.c
-index 98f2a4e56..2c7e72e1f 100644
+index 304d75931..3ab913ad0 100644
 --- a/src/manage_sql_report_formats.c
 +++ b/src/manage_sql_report_formats.c
-@@ -30,8 +30,8 @@
+@@ -31,8 +31,8 @@
  #include "utils.h"
  
  #include <errno.h>
@@ -369,7 +386,7 @@ index 98f2a4e56..2c7e72e1f 100644
  #include <libgen.h>
  #include <limits.h>
 diff --git a/src/manage_sql_report_formats.h b/src/manage_sql_report_formats.h
-index 2e3fe0de2..59ba267ce 100644
+index c7dd4154a..f77c19b21 100644
 --- a/src/manage_sql_report_formats.h
 +++ b/src/manage_sql_report_formats.h
 @@ -22,7 +22,7 @@
@@ -382,10 +399,10 @@ index 2e3fe0de2..59ba267ce 100644
  gboolean
  lookup_report_format (const char*, report_format_t*);
 diff --git a/src/manage_sql_secinfo.c b/src/manage_sql_secinfo.c
-index f8cc192b2..02e7d68b1 100644
+index ac2a86f4f..7cf32df87 100644
 --- a/src/manage_sql_secinfo.c
 +++ b/src/manage_sql_secinfo.c
-@@ -38,7 +38,7 @@
+@@ -39,7 +39,7 @@
  #include <fcntl.h>
  #include <fnmatch.h>
  #include <ftw.h>
@@ -395,7 +412,7 @@ index f8cc192b2..02e7d68b1 100644
  #include <stdlib.h>
  #include <string.h>
 diff --git a/src/manage_sql_secinfo.h b/src/manage_sql_secinfo.h
-index 688dc30df..3df082035 100644
+index f3e331b93..791081768 100644
 --- a/src/manage_sql_secinfo.h
 +++ b/src/manage_sql_secinfo.h
 @@ -21,7 +21,7 @@
@@ -408,7 +425,7 @@ index 688dc30df..3df082035 100644
  #define _GVMD_MANAGE_SQL_SECINFO_H
  
 diff --git a/src/manage_utils.h b/src/manage_utils.h
-index d5947542b..28db6eb73 100644
+index dcdba5837..b650bdd00 100644
 --- a/src/manage_utils.h
 +++ b/src/manage_utils.h
 @@ -27,7 +27,7 @@
@@ -421,7 +438,7 @@ index d5947542b..28db6eb73 100644
  #include <time.h>
  
 diff --git a/src/sql.h b/src/sql.h
-index 1a635e3bb..5575b7880 100644
+index ab73b9bc2..8a010ba13 100644
 --- a/src/sql.h
 +++ b/src/sql.h
 @@ -27,7 +27,7 @@
@@ -434,7 +451,7 @@ index 1a635e3bb..5575b7880 100644
  /* Helpers. */
  
 diff --git a/src/sql_pg.c b/src/sql_pg.c
-index 435b09224..926370d7e 100644
+index c8094953e..41783a0fa 100644
 --- a/src/sql_pg.c
 +++ b/src/sql_pg.c
 @@ -29,7 +29,7 @@
@@ -445,9 +462,9 @@ index 435b09224..926370d7e 100644
 +#include <glib-2.0/glib.h>
  #include <inttypes.h>
  #include <netinet/in.h>
- #include <libpq-fe.h>
+ #include <postgresql/libpq-fe.h>
 diff --git a/src/utils.h b/src/utils.h
-index 7b951ba75..4a2ac9424 100644
+index 999a128ee..dc5ec8331 100644
 --- a/src/utils.h
 +++ b/src/utils.h
 @@ -24,7 +24,7 @@
